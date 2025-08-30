@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BioMarine AI</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="video-container">
+      <video id="video-background" autoplay muted loop playsinline>
+        <source src="/src/stock/vid1.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+  </div>
+    
+
+
+  <script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+            const video = document.querySelector("#video-background");
+            // Check if the video element exists before adding the event listener
+            if (video) {
+                // Listen for the 'canplay' event on the video element
+                video.addEventListener('canplay', () => {
+                // Set the playbackRate to slow down the video
+                video.playbackRate = 0.5; 
+                // You can also add a play() method to ensure it plays
+                // video.play(); 
+                });
+            }
+        });
+  </script>
+</body>
+</html>
