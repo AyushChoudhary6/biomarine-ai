@@ -1,35 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BioMarine AI</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BioMarine AI</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="video-container">
-      <video id="video-background" autoplay muted loop playsinline>
-        <source src="/src/stock/vid1.mp4" type="video/mp4">
-        Your browser does not support the video tag.
-      </video>
-  </div>
+
+  <header>
+      <logo>
+        <div class="logo"></div>
+      </logo>
+      <div class="navbar">
+        <div class="link">
+          <i class="fa-solid fa-house"></i>
+          <a href="#">Home</a>
+        </div>
+        <div class="link">
+          <i class="fa-solid fa-grip"></i>
+          <a href="">Dashboard</a>
+        </div>
+        <div class="link">
+          <i class="fa-solid fa-upload"></i>
+          <a href="">Upload</a>
+        </div>
+        <div class="link">
+          <i class="fa-brands fa-searchengin"></i>
+          <a href="">Explore Data</a>
+        </div>
+        <div id="login">
+          <i class="fa-solid fa-right-to-bracket"></i>
+          <a href="">Login</a>
+        </div>
+      </div>
+    </header>
     
 
+  <section class="hero">
+    <main>
+      <h1>BioMarine AI</h1>
+      <p>Advancing Marine Science Through
+Collaborative Data</p>
+    </main>
+    <div class="scroll-down">
+      <i class="fa-solid fa-angles-down"></i>
+    </div>
+  </section>
+  
+  <div class="sec1">
 
-  <script>
-    document.addEventListener('DOMContentLoaded', (event) => {
-            const video = document.querySelector("#video-background");
-            // Check if the video element exists before adding the event listener
-            if (video) {
-                // Listen for the 'canplay' event on the video element
-                video.addEventListener('canplay', () => {
-                // Set the playbackRate to slow down the video
-                video.playbackRate = 0.5; 
-                // You can also add a play() method to ensure it plays
-                // video.play(); 
-                });
-            }
-        });
-  </script>
+  </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js" integrity="sha512-NcZdtrT77bJr4STcmsGAESr06BYGE8woZdSdEgqnpyqac7sugNO+Tr4bGwGF3MsnEkGKhU2KL2xh6Ec+BqsaHA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollTrigger.min.js" integrity="sha512-P2IDYZfqSwjcSjX0BKeNhwRUH8zRPGlgcWl5n6gBLzdi4Y5/0O4zaXrtO4K9TZK6Hn1BenYpKowuCavNandERg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>  
+    <script src="./script.js"></script>
 </body>
 </html>
