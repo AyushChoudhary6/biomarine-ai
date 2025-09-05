@@ -6,14 +6,14 @@
     box-sizing: border-box;
     font-family: 'Poppins', sans-serif;
 }
+body {
+  margin: 0;
+  background: linear-gradient(180deg, #004466 0%, #00152e 100%);
+  color: white;
+  overflow-x: hidden;
+}
 
-.hero{
-        height:100vh;
-        width: 100%;
-        background-image: url('../stock/Bg.png');
-        background-size: cover;
-        background-position: center;
-    }
+
 header{
     border-radius: 100px;
     position: fixed;         /* stays on top */
@@ -24,7 +24,7 @@ header{
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 12px 50px;      /* padding instead of margins */
+    padding: 2px 20px;      /* padding instead of margins */
     backdrop-filter: blur(6px);     
 }
 
@@ -33,8 +33,8 @@ header:hover{
     transition: 0.3s ease-in-out;
 }
 .logo{
-    width: 90px;
-    height: 90px;
+    width: 80px;
+    height: 80px;
     background-image: url('../stock/logo.png');
     background-size: contain;
     background-repeat: no-repeat;
@@ -64,13 +64,13 @@ header:hover{
 .navbar .link a {
     text-decoration: none;
     color: white;
-    font-size: 1.2em;
+    font-size: 0.8em;
     transition: color 0.3s;
     }
 
     .navbar .link i {
         color: white;
-      font-size: 1.2em;
+      font-size: 1em;
       transition: transform 0.3s;
     }
 
@@ -104,7 +104,7 @@ header:hover{
       border-radius: 20px;
       transition: 0.3s;
       background-color: #00ffff;
-    display: flex;
+      display: flex;
       align-items: center;
       gap: 10px;
       font-weight: 500;
@@ -122,13 +122,13 @@ header:hover{
 #login a {
     text-decoration: none;
     color: black;
-    font-size: 1.2em;
+    font-size: 0.8em;
     transition: color 0.3s;
     }
 
     #login i {
         color: black;
-      font-size: 1.2em;
+      font-size: 1em;
       transition: transform 0.3s;
     }
 
@@ -157,6 +157,14 @@ header:hover{
       width: 100%;
     }
 
+    .hero{
+    height:100vh;
+    width: 100%;
+    background-image: url('../stock/Bg.png');
+    background-size: cover;
+    background-position: center;
+}
+
 main {
     height: 80vh;
     display: flex;
@@ -168,12 +176,12 @@ main {
     gap: 20px;
 }
 main h1 {
-    font-size: 5.5em;
+    font-size: 5em;
     text-shadow: 0 0 10px #00ffff;
 }
 
 main p{
-    font-size: 1.5em;
+    font-size: 1.2em;
 }
  
 .scroll-down {
@@ -199,10 +207,38 @@ main p{
   }
 }
 
-.sec1{
+/* card container */
+
+  .card-container {
+    position: relative;
+    width: 100%;
+}
+
+.card {
+  position: relative;
+  height: 90vh;
+  width: 75vw;
+  margin: 12vh auto;              /* visual spacing between panels */
+  background: #031a33;            /* darker for contrast */
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 22px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.35), inset 0 0 0 1px rgba(255,255,255,0.05);
+  opacity: 0;
+  transform: translateY(80px) scale(0.94);
+  backdrop-filter: blur(2px);
+}
+.card:hover {
+  box-shadow: 0 18px 60px rgba(0, 255, 255, 0.15), 0 10px 30px rgba(0,0,0,0.45);
+}
+
+
+  .sec1{
     height: 100vh;
     width: 100%;
-    background-color: black;
+    background-color: linear-gradient(0.5turn, #004466, #00152e);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -211,3 +247,238 @@ main p{
     flex-direction: column;
     gap: 20px;
 }
+.sec1 h1 {
+  font-size: 2rem;
+  margin-bottom: 10px;
+  text-shadow: 0 0 10px #00ffff;
+}
+
+
+/* Stats Section */
+.stats-section {
+  width: min(100%, 1000px);
+  height:auto;
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  gap: 24px;
+  padding: 28px;
+  background: rgba(0, 15, 35, 0.55);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  backdrop-filter: blur(6px);
+  flex-wrap: wrap;
+}
+
+.stat-card {
+  background: #ffffff;
+  padding: 22px 24px;
+  border-radius: 14px;
+  text-align: center;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+  width: 300px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 25px rgba(0, 200, 255, 0.25);
+}
+
+.stat-card i {
+  font-size: 2rem;
+  color: #028090;
+  margin-bottom: 10px;
+  background: #d9f9fa;
+  padding: 12px;
+  border-radius: 50%;
+}
+
+.stat-card h2 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #021428;
+  margin: 8px 0 4px;
+}
+
+.stat-card p {
+  font-size: 0.95rem;
+  color: #4b5563;
+}
+
+/* Section 2 cards */
+
+.section {
+  max-width: 1100px;
+  margin: auto;
+  padding: 10px 24px;
+  text-align: center;
+}
+
+.section h2 {
+  font-size: 1.8rem;
+  margin-bottom: 6px;
+  font-weight: 700;
+  padding: 10px;
+}
+
+.section p {
+  color: #cfe9ff;
+  font-size: 1rem;
+  margin-bottom: 24px;
+}
+
+.card-div{
+  display: grid;
+}
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 18px;
+}
+
+.cardd {
+  background: #fff;
+  color: #111827;
+  border-radius: 12px;
+  padding: 22px 18px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.cardd:hover { transform: translateY(-6px); }
+.cardd h3 { font-size: 1.05rem; margin-bottom: 8px; }
+.cardd p  { font-size: 0.95rem; color: #4b5563; margin-bottom: 14px; }
+.cardd a  { text-decoration: none; font-weight: 700; color: #0ea5a9; }
+
+/* Final full-cover slide content */
+#sec3 {
+  display: flex;
+  padding: 32px;
+  text-align: center;
+}
+#sec3 .full-cover-content {
+  max-width: 900px;
+}
+#sec3 h2 { font-size: 2rem; margin-bottom: 8px; }
+#sec3 p  { color: #cfe9ff; }
+.full-cover-content div{
+  margin-top:20px;
+  margin-left: 40% ;
+  padding:15px 20px;
+  width: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  background-color: #028090;
+  border-radius: 15px;
+}
+.full-cover-content div:hover{
+  box-shadow: #00ffff 0 0 10px 0px;
+}
+.full-cover-content div a{
+  font-size: 0.8em;
+  text-decoration: none;
+  color: white;
+  font-weight: 600;
+}
+
+/* Header + hero minor fixes (keep yours otherwise) */
+header { color: #e6fbff; background: rgba(4,22,45,0.35); }
+main   { height: 80vh; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; }
+main h1{ font-size: 4.5em; text-shadow: 0 0 10px #00ffff; }
+main p { font-size: 1.1em; color: #e6fbff; }
+
+
+/* footer */
+    footer {
+      background: linear-gradient(to bottom, #001932, #2da2d3);
+      color: #fff;
+      padding: 100px 60px 20px;
+    }
+
+    .footer-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .footer-section {
+      flex: 1;
+      min-width: 200px;
+      margin: 15px;
+    }
+
+    .footer-section h3 {
+      font-size: 16px;
+      margin-bottom: 15px;
+      font-weight: 600;
+    }
+
+    .footer-section p {
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .footer-section ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .footer-section ul li {
+      margin: 8px 0;
+    }
+
+    .footer-section ul li a {
+      text-decoration: none;
+      color: #fff;
+      font-size: 14px;
+      transition: color 0.3s ease;
+    }
+
+    .footer-section ul li a:hover {
+      color: #ffda79;
+    }
+
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .footer-logo i {
+      font-size: 30px;
+      margin-right: 10px;
+    }
+
+    .social-icons a {
+      color: #fff;
+      font-size: 18px;
+      margin-right: 15px;
+      transition: color 0.3s ease;
+    }
+
+    .social-icons a:hover {
+      color: #ffda79;
+    }
+
+    .footer-bottom {
+      border-top: 1px solid rgba(255,255,255,0.3);
+      padding-top: 15px;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      font-size: 13px;
+    }
+
+    .footer-bottom a {
+      color: #fff;
+      text-decoration: none;
+      margin-left: 15px;
+    }
+
+    .footer-bottom a:hover {
+      text-decoration: underline;
+    }
