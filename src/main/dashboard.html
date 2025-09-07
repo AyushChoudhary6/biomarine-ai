@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Research Dashboard</title>
+
+  <!-- Font Awesome for icons -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="dashboard">
+    <!-- Header -->
+    <div class="dashboard-header">
+      <div>
+        <h1>Research Dashboard</h1>
+        <p>Real-time insights into marine research data and trends</p>
+      </div>
+      <div class="dashboard-buttons">
+        <button class="btn btn-refresh"><i class="fas fa-sync-alt"></i> Refresh</button>
+        <button class="btn btn-export"><i class="fas fa-download"></i> Export Report</button>
+      </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats">
+      <div class="card">
+        <div class="card-header">
+          <h4>Total Species Recorded</h4>
+          <i class="fas fa-dna"></i>
+        </div>
+        <div class="value" data-target="1247">0</div>
+        <span class="change positive">+12%</span>
+        <p>New species identified this month</p>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h4>Water Temperature Avg</h4>
+          <i class="fas fa-thermometer-half"></i>
+        </div>
+        <div class="value" data-target="18.5" data-suffix="°C">0</div>
+        <span class="change positive">+0.3°C</span>
+        <p>Compared to last month</p>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h4>Salinity Levels</h4>
+          <i class="fas fa-water"></i>
+        </div>
+        <div class="value" data-target="35.2" data-suffix=" PSU">0</div>
+        <span class="change negative">-0.1</span>
+        <p>Within optimal range</p>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h4>Active Research Sites</h4>
+          <i class="fas fa-map-marker-alt"></i>
+        </div>
+        <div class="value" data-target="25">0</div>
+        <span class="change positive">+2</span>
+        <p>New sites added this quarter</p>
+      </div>
+    </div>
+  </div>
+
+  
+
+  <div class="dashboard-one">
+    <!-- Left: Recent Uploads -->
+    <div class="card-one">
+      <h2>📊 Recent Data Uploads</h2>
+
+      <div class="upload">
+        <h3>Pacific Coast Temperature Survey <span class="status processed">processed</span></h3>
+        <p class="meta">📅 2024-01-28 14:30 · Monterey Bay, CA</p>
+        <span class="tag">Temperature/Salinity</span>
+      </div>
+
+      <div class="upload">
+        <h3>Deep Sea Biodiversity Study <span class="status processing">processing</span></h3>
+        <p class="meta">📅 2024-01-28 09:15 · Channel Islands, CA</p>
+        <span class="tag">Species Count</span>
+      </div>
+
+      <div class="upload">
+        <h3>Coral Reef Health Assessment <span class="status processed">processed</span></h3>
+        <p class="meta">📅 2024-01-27 16:45 · Key Largo, FL</p>
+        <span class="tag">Ecosystem Health</span>
+      </div>
+
+      <div class="upload">
+        <h3>Pelagic Fish Population Survey <span class="status processed">processed</span></h3>
+        <p class="meta">📅 2024-01-27 11:20 · Gulf of Mexico</p>
+        <span class="tag">Population Data</span>
+      </div>
+    </div>
+
+    <!-- Right: Trending + Quick Actions -->
+    <div class="card trending">
+  <h2><i class="fas fa-chart-line"></i> Trending Topics</h2>
+  <p class="subtitle">Popular research areas this month</p>
+  <div class="topic">
+    <div>
+      <strong>Ocean Acidification</strong>
+      <div class="datasets">45 datasets</div>
+    </div>
+    <div class="rank"><i class="fas fa-chart-line"></i> #1</div>
+  </div>
+  <div class="topic">
+    <div>
+      <strong>Coral Bleaching</strong>
+      <div class="datasets">32 datasets</div>
+    </div>
+    <div class="rank"><i class="fas fa-chart-line"></i> #2</div>
+  </div>
+  <div class="topic">
+    <div>
+      <strong>Fish Migration Patterns</strong>
+      <div class="datasets">28 datasets</div>
+    </div>
+    <div class="rank"><i class="fas fa-chart-line"></i> #3</div>
+  </div>
+  <div class="topic">
+    <div>
+      <strong>Microplastic Impact</strong>
+      <div class="datasets">23 datasets</div>
+    </div>
+    <div class="rank"><i class="fas fa-chart-line"></i> #4</div>
+  </div>
+  <div class="topic">
+    <div>
+      <strong>Deep Sea Exploration</strong>
+      <div class="datasets">19 datasets</div>
+    </div>
+    <div class="rank"><i class="fas fa-chart-line"></i> #5</div>
+  </div>
+  <!-- Quick Actions Section -->
+<div class="card actions" id="quick-actions">
+  <h2><i class="fas fa-bolt"></i> Quick Actions</h2>
+
+  <button class="primary">
+    <i class="fas fa-chart-bar"></i> Generate Report
+  </button>
+
+  <button class="secondary">
+    <i class="fas fa-download"></i> Export Data
+  </button>
+
+  <button class="secondary">
+    <i class="fas fa-eye"></i> View Analysis
+  </button>
+</div>
+
+</div>
+</div>
+
+  <!-- Data Visualization Section -->
+  <section class="card data-visual" id="data-visual">
+    <h2>Data Visualization</h2>
+    <p>Interactive charts and maps would be displayed here with real data</p>
+    <div class="visual-box">
+      <div class="visual-content">
+        <span class="icon">📊</span>
+        <p>Interactive charts and data visualizations will be rendered here</p>
+        <button id="load-btn">Load Sample Data</button>
+      </div>
+    </div>
+  </section>
+   
+
+
+  <!-- GSAP + ScrollTrigger -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <script src="script.js"></script>
+
+</body>
+</html>
