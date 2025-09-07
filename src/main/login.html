@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BioMarine AI - Login</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts & Font Awesome Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <style>
+        /* Base styles and custom properties */
+        :root {
+            --ocean-blue: #04162d;
+            --glow-aqua: #00ffff;
+            --glow-teal: #00c2c2;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--ocean-blue);
+            color: white;
+            overflow: hidden; /* Prevent scrollbars from the canvas */
+        }
+
+        /* The 3D scene canvas */
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        /* Glassmorphism Login Card */
+        .login-card {
+            background: rgba(10, 30, 50, 0.25);
+            backdrop-filter: blur(12px) saturate(150%);
+            -webkit-backdrop-filter: blur(12px) saturate(150%);
+            border-radius: 20px;
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.1), 0 0 30px rgba(0, 255, 255, 0.05), inset 0 0 10px rgba(0, 255, 255, 0.1);
+            transform-style: preserve-3d; /* For 3D transforms */
+        }
+
+        /* Floating Label Input Style */
+        .input-group {
+            position: relative;
+        }
+        .input-field {
+            border: none;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.3);
+            background: transparent;
+            color: white;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+        .input-field:focus {
+            border-bottom-color: var(--glow-aqua);
+            box-shadow: 0 1px 0 var(--glow-aqua);
+        }
+        .input-label {
+            position: absolute;
+            top: 1rem;
+            left: 2.5rem;
+            color: rgba(255, 255, 255, 0.5);
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+        .input-field:focus + .input-label,
+        .input-field:not(:placeholder-shown) + .input-label {
+            top: -0.5rem;
+            left: 2.5rem;
+            font-size: 0.75rem;
+            color: var(--glow-aqua);
+        }
+        .input-icon {
+            color: rgba(0, 255, 255, 0.5);
+            transition: color 0.3s ease;
+        }
+        .input-field:focus ~ .input-icon {
+            color: var(--glow-aqua);
+        }
+
+        /* Login button with gradient and ripple effect container */
+        .login-btn {
+            position: relative;
+            overflow: hidden;
+            background-image: linear-gradient(90deg, var(--glow-aqua), var(--glow-teal));
+            transition: all 0.3s ease;
+        }
+        .login-btn:hover {
+            box-shadow: 0 0 20px var(--glow-aqua);
+            transform: translateY(-2px);
+        }
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.7);
+            transform: scale(0);
+            animation: ripple-effect 0.6s linear;
+        }
+        @keyframes ripple-effect {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+        
+        /* Social login icon styles */
+        .social-icon {
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+        }
+        .social-icon:hover {
+            background: var(--glow-aqua);
+            color: var(--ocean-blue);
+            border-color: var(--glow-aqua);
+            box-shadow: 0 0 15px var(--glow-aqua);
+        }
+
+        /* Custom text gradient for logo */
+        .text-gradient {
+            background: linear-gradient(90deg, var(--glow-aqua), #93f2f2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            transition: filter 0.3s ease;
+        }
+        .logo:hover .text-gradient {
+            filter: drop-shadow(0 0 8px var(--glow-aqua));
+        }
+
+        /* Forgot password link style */
+        .forgot-link {
+            position: relative;
+            text-decoration: none;
+        }
+        .forgot-link::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            transform: scaleX(0);
+            height: 1px;
+            bottom: -2px;
+            left: 0;
+            background-color: var(--glow-aqua);
+            transform-origin: bottom right;
+            transition: transform 0.25s ease-out;
+        }
+        .forgot-link:hover::after {
+            transform: scaleX(1);
+            transform-origin: bottom left;
+        }
+    </style>
+</head>
+<body class="bg-ocean-blue">
+    <!-- 3D Background Canvas -->
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- Main Content -->
+    <main class="relative w-full h-screen flex items-center justify-center p-4">
+        <a class="absolute top-6 left-10 text-xl hover:drop-shadow-[0 0 8px var(--glow-aqua])" href="./index.html"><i class="fa-solid fa-left-long"></i> Back</a>
+        
+        <!-- Login Card -->
+        <div id="login-card" class="login-card w-full max-w-md p-8 md:p-10 space-y-6 opacity-0">
+            
+            <!-- Logo -->
+            <div class="text-center logo">
+                <h1 class="text-4xl font-bold text-gradient tracking-wider">BioMarine AI</h1>
+            </div>
+
+            <!-- Heading & Subtext -->
+            <div class="text-center space-y-2 header-text">
+                <h2 class="text-2xl font-semibold text-white">Welcome Back</h2>
+                <p class="text-sm text-gray-300">Dive into data. Explore the ocean with intelligence.</p>
+            </div>
+            
+            <!-- Form -->
+            <form id="login-form" class="space-y-6">
+                <!-- Username -->
+                <div class="input-group">
+                    <input type="text" id="username" class="input-field w-full py-3 pl-10 pr-4 placeholder-transparent" placeholder="Username" required>
+                    <label for="username" class="input-label">Username</label>
+                    <i class="fas fa-user absolute left-3 top-3.5 input-icon"></i>
+                </div>
+                <!-- Password -->
+                <div class="input-group">
+                    <input type="password" id="password" class="input-field w-full py-3 pl-10 pr-4 placeholder-transparent" placeholder="Password" required>
+                    <label for="password" class="input-label">Password</label>
+                    <i class="fas fa-lock absolute left-3 top-3.5 input-icon"></i>
+                </div>
+                
+                <!-- Forgot Password -->
+                <div class="text-right">
+                    <a href="#" class="forgot-link text-xs text-cyan-300 hover:text-cyan-100">Forgot Password?</a>
+                </div>
+
+                <!-- Login Button -->
+                <button type="submit" class="login-btn w-full py-3 rounded-lg text-ocean-blue font-bold text-lg tracking-wider">
+                    LOGIN
+                </button>
+            </form>
+
+            <!-- Social Login -->
+            <div class="text-center space-y-4">
+                <p class="text-xs text-gray-400">OR CONNECT WITH</p>
+                <div class="flex items-center justify-center space-x-4 social-icons">
+                    <button class="social-icon w-10 h-10 rounded-full text-cyan-200"><i class="fab fa-google"></i></button>
+                    <button class="social-icon w-10 h-10 rounded-full text-cyan-200"><i class="fab fa-linkedin-in"></i></button>
+                    <button class="social-icon w-10 h-10 rounded-full text-cyan-200"><i class="fab fa-github"></i></button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- JS Libraries: Three.js for 3D and GSAP for animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+    
+    <script type="module">
+        // --- 3D Background Scene ---
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({
+            canvas: document.getElementById('bg-canvas'),
+            alpha: true // Transparent background
+        });
+
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        camera.position.z = 50;
+
+        // Lighting
+        const ambientLight = new THREE.AmbientLight(0x04162d, 2);
+        scene.add(ambientLight);
+        const directionalLight = new THREE.DirectionalLight(0x00ffff, 1.5);
+        directionalLight.position.set(5, 5, 5);
+        scene.add(directionalLight);
+
+        // Particle System for background elements
+        const particlesGeometry = new THREE.BufferGeometry();
+        const particlesCount = 5000;
+        const posArray = new Float32Array(particlesCount * 3);
+        for (let i = 0; i < particlesCount * 3; i++) {
+            posArray[i] = (Math.random() - 0.5) * 200;
+        }
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+        const particlesMaterial = new THREE.PointsMaterial({
+            size: 0.05,
+            color: 0x00ffff,
+            blending: THREE.AdditiveBlending
+        });
+        const particleMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+        scene.add(particleMesh);
+
+        // Jellyfish-like shapes
+        const jellyfishGroup = new THREE.Group();
+        const jellyMaterial = new THREE.MeshStandardMaterial({
+            color: 0x00ffff,
+            emissive: 0x00c2c2,
+            transparent: true,
+            opacity: 0.2,
+            roughness: 0.1,
+            metalness: 0.8
+        });
+        for (let i = 0; i < 15; i++) {
+            const jelly = new THREE.Mesh(
+                new THREE.SphereGeometry(Math.random() * 1 + 0.5, 16, 8),
+                jellyMaterial
+            );
+            jelly.position.set(
+                (Math.random() - 0.5) * 100,
+                (Math.random() - 0.5) * 100,
+                (Math.random() - 0.5) * 50
+            );
+            jellyfishGroup.add(jelly);
+        }
+        scene.add(jellyfishGroup);
+
+        // Mouse movement for parallax effect
+        let mouseX = 0;
+        let mouseY = 0;
+        document.addEventListener('mousemove', (event) => {
+            mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+            mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+        });
+
+        // Animation Loop
+        const clock = new THREE.Clock();
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const elapsedTime = clock.getElapsedTime();
+
+            // Animate particles
+            particleMesh.rotation.y = elapsedTime * 0.05;
+
+            // Animate jellyfish
+            jellyfishGroup.children.forEach((jelly, i) => {
+                jelly.position.y += 0.02;
+                if (jelly.position.y > 50) jelly.position.y = -50;
+                jelly.scale.y = Math.sin(elapsedTime * 0.5 + i) * 0.1 + 0.9;
+            });
+            
+            // Parallax effect
+            camera.position.x += (mouseX * 5 - camera.position.x) * 0.05;
+            camera.position.y += (mouseY * 5 - camera.position.y) * 0.05;
+            camera.lookAt(scene.position);
+
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+
+        // --- GSAP Animations & UI Interactions ---
+        const loginCard = document.getElementById('login-card');
+        const loginForm = document.getElementById('login-form');
+        const loginBtn = document.querySelector('.login-btn');
+
+        // Entrance animations
+        const tl = gsap.timeline({ defaults: { ease: 'power3.inOut' } });
+        tl.to(loginCard, {
+            duration: 1.5,
+            opacity: 1,
+            scale: 1,
+            delay: 0.5
+        }, "start")
+        .fromTo(loginCard, {scale: 0.8}, {scale: 1, duration: 1.5}, "start")
+        .from(".header-text", { duration: 0.8, y: -30, opacity: 0, stagger: 0.2 }, "-=1")
+        .from("#login-form > *", { duration: 0.8, y: 30, opacity: 0, stagger: 0.2 }, "-=0.8")
+        .from(".social-icons", { duration: 0.8, y: 30, opacity: 0 }, "-=0.6");
+        
+        // Card hover float effect
+        loginCard.addEventListener('mousemove', (e) => {
+            const { clientX, clientY, currentTarget } = e;
+            const { clientWidth, clientHeight, offsetLeft, offsetTop } = currentTarget;
+
+            const x = (clientX - offsetLeft - clientWidth / 2) / 25;
+            const y = (clientY - offsetTop - clientHeight / 2) / 25;
+            
+            gsap.to(loginCard, {
+                duration: 1,
+                rotationY: x,
+                rotationX: -y,
+                transformPerspective: 1000,
+                ease: "power2.out"
+            });
+        });
+        loginCard.addEventListener('mouseleave', () => {
+            gsap.to(loginCard, { duration: 1, rotationY: 0, rotationX: 0, ease: "power2.out" });
+        });
+
+        // Social icons tilt effect
+        document.querySelectorAll('.social-icon').forEach(icon => {
+            icon.addEventListener('mousemove', (e) => {
+                const { clientX, clientY, currentTarget } = e;
+                const { clientWidth, clientHeight, offsetLeft, offsetTop } = currentTarget;
+                const x = (clientX - offsetLeft - clientWidth / 2) / 4;
+                const y = (clientY - offsetTop - clientHeight / 2) / 4;
+                gsap.to(icon, { duration: 0.5, x: x, y: y, ease: 'power2.out' });
+            });
+            icon.addEventListener('mouseleave', () => {
+                gsap.to(icon, { duration: 0.5, x: 0, y: 0, ease: 'power2.out' });
+            });
+        });
+        
+        // Form submission simulation
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            // Simple validation simulation
+            if (username === '' || password === '') {
+                // Shake animation for error
+                gsap.fromTo(loginCard, 
+                    { x: -10, borderColor: 'red', boxShadow: '0 0 20px red' }, 
+                    { x: 10, duration: 0.1, repeat: 5, yoyo: true, clearProps: 'x', onComplete: () => {
+                        gsap.to(loginCard, {
+                          borderColor: 'rgba(0, 255, 255, 0.2)', 
+                          boxShadow: '0 0 15px rgba(0, 255, 255, 0.1), 0 0 30px rgba(0, 255, 255, 0.05), inset 0 0 10px rgba(0, 255, 255, 0.1)',
+                          duration: 0.5
+                        });
+                    }}
+                );
+            } else {
+                // Successful login ripple effect
+                const rect = loginBtn.getBoundingClientRect();
+                const ripple = document.createElement('span');
+                ripple.className = 'ripple';
+                ripple.style.left = `${e.clientX - rect.left}px`;
+                ripple.style.top = `${e.clientY - rect.top}px`;
+                loginBtn.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 600);
+                
+                // You can add logic for successful login here, e.g., redirecting the user
+            }
+        });
+
+    </script>
+</body>
+</html>

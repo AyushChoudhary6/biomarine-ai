@@ -1,5 +1,10 @@
+document.querySelector(".btn-refresh").addEventListener("click", () => {
+    location.reload(); // refreshes the current page
+  });
 
     gsap.registerPlugin(ScrollTrigger);
+
+    gsap.from("header", { opacity: 0, y: -30, duration: 0.8, ease: "power3.out" });
 
     // Header animation
     gsap.to(".dashboard-header", {
