@@ -48,7 +48,6 @@ gsap.from(".stat-card", {
   scrollTrigger: {
     trigger: "#sec1 .stats-section",
     start: "top 80%",
-    markers: true,
     scrub:1,
   }
 });
