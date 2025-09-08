@@ -1,0 +1,185 @@
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Ocean Background */
+body {
+  background: linear-gradient(180deg, #00152e 0%, #002a5e 100%);
+  color: #fff;
+  overflow-x: hidden;
+  min-height: 100vh;
+  position: relative;
+  padding: 40px;
+}
+
+/* Animated Particles */
+.particle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: #00ffff;
+  border-radius: 50%;
+  opacity: 0.6;
+  box-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;
+}
+
+/* Wave Layers */
+.wave {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 200%;
+  height: 200px;
+  background: rgba(0, 255, 255, 0.1);
+  border-radius: 50%;
+  animation: waveMove 8s linear infinite;
+}
+
+.wave:nth-child(2) {
+  animation-duration: 12s;
+  opacity: 0.6;
+}
+
+.wave:nth-child(3) {
+  animation-duration: 16s;
+  opacity: 0.3;
+}
+
+@keyframes waveMove {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* Section */
+.upload-section {
+  text-align: center;
+  max-width: 900px;
+  margin: auto;
+  position: relative;
+  z-index: 2;
+}
+
+/* Headings */
+.upload-section h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #00ffff;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  font-size: 1.1rem;
+  color: #a0aec0;
+  margin-bottom: 30px;
+}
+
+/* Guidelines */
+.guidelines-box {
+  background: #0a2540;
+  border: 1px solid #00ffff;
+  border-radius: 12px;
+  padding: 25px;
+  text-align: left;
+  box-shadow: 0 0 20px #00ffff;
+  margin-bottom: 40px;
+}
+
+.guidelines-box h2 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #00ffff;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.guidelines-box li {
+  font-size: 1rem;
+  margin: 12px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #e2e8f0;
+}
+
+.guidelines-box li i {
+  color: #22c55e;
+}
+
+/* Upload Box */
+.upload-box {
+  background: #0a2540;
+  border: 1px solid #00ffff;
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 0 20px #00ffff;
+}
+
+.upload-box h2 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #00ffff;
+}
+
+.upload-box p {
+  margin-bottom: 20px;
+  color: #e2e8f0;
+}
+
+/* Drop Zone */
+.drop-zone {
+  border: 2px dashed #00ffff;
+  border-radius: 10px;
+  padding: 40px;
+  text-align: center;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.drop-zone:hover {
+  background: rgba(0, 255, 255, 0.1);
+}
+
+.upload-icon {
+  font-size: 2.5rem;
+  color: #00ffff;
+  margin-bottom: 15px;
+}
+
+.drop-zone p {
+  font-size: 1.1rem;
+  margin-bottom: 5px;
+}
+
+.drop-zone small {
+  color: #a0aec0;
+  display: block;
+  margin-bottom: 15px;
+}
+
+.browse-btn {
+  background: #00ffff;
+  color: #00152e;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.browse-btn:hover {
+  background: #00c7c7;
+}
+
+#fileList {
+  margin-top: 20px;
+  text-align: left;
+  font-size: 0.95rem;
+  color: #e2e8f0;
+}
