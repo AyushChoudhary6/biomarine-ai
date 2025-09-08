@@ -18,6 +18,18 @@ document.querySelector(".btn-refresh").addEventListener("click", () => {
       ease: "power2.out"
     });
 
+    const cursorGlow = document.querySelector(".cursor-glow");
+
+document.addEventListener("mousemove", (e) => {
+  // Use GSAP for smoother animation
+  gsap.to(cursorGlow, {
+    duration: 0.3,
+    x: e.clientX,
+    y: e.clientY,
+    ease: "power2.out"
+  });
+}); 
+
     // Cards animation with stagger
     gsap.to(".card", {
       scrollTrigger: {

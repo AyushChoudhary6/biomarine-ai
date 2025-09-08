@@ -8,6 +8,21 @@ body {
       min-height: 200vh; /* just for scroll demo */
     }
 
+    .cursor-glow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 20px;
+  height: 20px;
+  background-color: #00ffff;
+  border-radius: 50%;
+  pointer-events: none; /* Allows clicking through the element */
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  filter: blur(10px); /* Creates the soft glow effect */
+  transition: transform 0.1s ease-out; /* Makes the movement smooth */
+}
+
     header{
     border-radius: 100px;
     position: fixed;         /* stays on top */
