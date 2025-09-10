@@ -47,7 +47,7 @@
             border-radius: 20px;
             border: 1px solid rgba(0, 255, 255, 0.2);
             box-shadow: 0 0 15px rgba(0, 255, 255, 0.1), 0 0 30px rgba(0, 255, 255, 0.05), inset 0 0 10px rgba(0, 255, 255, 0.1);
-            transform-style: preserve-3d; /* For 3D transforms */
+            /* transform-style: preserve-3d; For 3D transforms */
         }
 
         /* Floating Label Input Style */
@@ -344,38 +344,38 @@
         .from(".social-icons", { duration: 0.8, y: 30, opacity: 0 }, "-=0.6");
         
         // Card hover float effect
-        loginCard.addEventListener('mousemove', (e) => {
-            const { clientX, clientY, currentTarget } = e;
-            const { clientWidth, clientHeight, offsetLeft, offsetTop } = currentTarget;
+        // loginCard.addEventListener('mousemove', (e) => {
+        //     const { clientX, clientY, currentTarget } = e;
+        //     const { clientWidth, clientHeight, offsetLeft, offsetTop } = currentTarget;
 
-            const x = (clientX - offsetLeft - clientWidth / 2) / 25;
-            const y = (clientY - offsetTop - clientHeight / 2) / 25;
+        //     const x = (clientX - offsetLeft - clientWidth / 2) / 25;
+        //     const y = (clientY - offsetTop - clientHeight / 2) / 25;
             
-            gsap.to(loginCard, {
-                duration: 1,
-                rotationY: x,
-                rotationX: -y,
-                transformPerspective: 1000,
-                ease: "power2.out"
-            });
-        });
-        loginCard.addEventListener('mouseleave', () => {
-            gsap.to(loginCard, { duration: 1, rotationY: 0, rotationX: 0, ease: "power2.out" });
-        });
+        //     gsap.to(loginCard, {
+        //         duration: 1,
+        //         rotationY: x,
+        //         rotationX: -y,
+        //         transformPerspective: 1000,
+        //         ease: "power2.out"
+        //     });
+        // });
+        // loginCard.addEventListener('mouseleave', () => {
+        //     gsap.to(loginCard, { duration: 1, rotationY: 0, rotationX: 0, ease: "power2.out" });
+        // });
 
         // Social icons tilt effect
-        document.querySelectorAll('.social-icon').forEach(icon => {
-            icon.addEventListener('mousemove', (e) => {
-                const { clientX, clientY, currentTarget } = e;
-                const { clientWidth, clientHeight, offsetLeft, offsetTop } = currentTarget;
-                const x = (clientX - offsetLeft - clientWidth / 2) / 4;
-                const y = (clientY - offsetTop - clientHeight / 2) / 4;
-                gsap.to(icon, { duration: 0.5, x: x, y: y, ease: 'power2.out' });
-            });
-            icon.addEventListener('mouseleave', () => {
-                gsap.to(icon, { duration: 0.5, x: 0, y: 0, ease: 'power2.out' });
-            });
-        });
+        // document.querySelectorAll('.social-icon').forEach(icon => {
+        //     icon.addEventListener('mousemove', (e) => {
+        //         const { clientX, clientY, currentTarget } = e;
+        //         const { clientWidth, clientHeight, offsetLeft, offsetTop } = currentTarget;
+        //         const x = (clientX - offsetLeft - clientWidth / 2) / 4;
+        //         const y = (clientY - offsetTop - clientHeight / 2) / 4;
+        //         gsap.to(icon, { duration: 0.5, x: x, y: y, ease: 'power2.out' });
+        //     });
+        //     icon.addEventListener('mouseleave', () => {
+        //         gsap.to(icon, { duration: 0.5, x: 0, y: 0, ease: 'power2.out' });
+        //     });
+        // });
         
         // Form submission simulation
         loginForm.addEventListener('submit', (e) => {

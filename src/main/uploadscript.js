@@ -1,5 +1,22 @@
 // ========== Page Animations ==========
 
+    gsap.registerPlugin(ScrollTrigger);
+
+    gsap.from("header", { opacity: 0, y: -30, duration: 0.8, ease: "power3.out" });
+
+    // Header animation
+    gsap.to(".dashboard-header", {
+      scrollTrigger: {
+        trigger: ".dashboard-header",
+        start: "top 80%",
+      },
+      opacity: 1,
+      y: 0,
+      duration: 1,
+      ease: "power2.out"
+    });
+
+
 // Title & Subtitle
 gsap.from(".upload-section h1", {
   opacity: 0,
