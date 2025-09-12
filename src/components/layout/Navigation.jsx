@@ -25,7 +25,7 @@ const CMLRELogo = () => (
       <Waves className="absolute inset-2 text-white z-10" />
     </div>
     <div className="hidden md:block">
-      <h1 className="text-xl font-bold text-white">CMLRE</h1>
+      <h1 className="text-xl font-bold text-white">BioMarine</h1>
       <p className="text-xs text-white/70">Marine Research</p>
     </div>
   </div>
@@ -44,7 +44,7 @@ const Navigation = () => {
     { name: 'Home', path: '/', icon: Home },
     { name: 'Dashboard', path: '/dashboard', icon: BarChart3 },
     { name: 'Research', path: '/research', icon: Database },
-    { name: 'Upload', path: '/upload', icon: Upload },
+    // { name: 'Upload', path: '/upload', icon: Upload },
     { name: 'Otoliths', path: '/otoliths', icon: Microscope },
     { name: 'AI Models', path: '/ai-models', icon: Brain },
     { name: 'About', path: '/about', icon: Info },
