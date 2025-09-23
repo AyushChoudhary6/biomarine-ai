@@ -122,9 +122,13 @@ const OtolithGallery = () => {
                 transition={{ delay: index * 0.05 }}
                 className="glass rounded-xl overflow-hidden group hover:scale-105 transition-transform duration-300"
               >
-                <div className="relative aspect-square bg-primary-900/20 flex items-center justify-center">
+                <div className="relative aspect-square bg-primary-900/20">
+                  <img
+                    src={`/otoliths/${item.filename}`}
+                    alt={`Otolith ${item.id}`}
+                    className="w-full h-full object-cover"
+                  />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <div className="text-4xl font-bold text-primary-400/30">{item.id}</div>
                   <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button className="p-2 bg-white/20 rounded-lg text-white hover:bg-white/30">
                       <ZoomIn className="w-4 h-4" />

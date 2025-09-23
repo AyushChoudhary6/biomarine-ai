@@ -43,12 +43,16 @@ const Navigation = () => {
   const navItems = [
     { name: 'Home', path: '/', icon: Home },
     { name: 'Dashboard', path: '/dashboard', icon: BarChart3 },
-    { name: 'Research', path: '/research', icon: Database },
+   // { name: 'Research', path: '/research', icon: Database },
     // { name: 'Upload', path: '/upload', icon: Upload },
     { name: 'Otoliths', path: '/otoliths', icon: Microscope },
     { name: 'AI Models', path: '/ai-models', icon: Brain },
+   
     { name: 'About', path: '/about', icon: Info },
     { name: 'Contact', path: '/contact', icon: Mail },
+     {name: 'signup', path: '/signup', icon: Waves},
+    { name: 'login', path: '/login', icon: Waves },
+    {name: 'profile', path: '/profile', icon: Waves},
   ]
 
   // Handle scroll effect
