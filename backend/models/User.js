@@ -14,23 +14,56 @@ const userSchema = new mongoose.Schema({
         unique: true,
         lowercase: true
     },
+    phone: {
+        type: String,
+        required: true,
+        unique: true,
+        minlength: 10,
+        maxlength: 15
+    },
     password: {
         type: String,
         required: true,
         minlength: 6
+    },
+    country: {
+        type: String,
+        required: true
     },
     userType: {
         type: String,
         enum: ['student', 'researcher'],
         required: true
     },
+    // Researcher-specific fields
+    qualifications: {
+        type: String,
+        required: function() { return this.userType === 'researcher'; }
+    },
+    popularArticle: {
+        type: String
+    },
+    institute: {
+        type: String,
+        required: function() { return this.userType === 'researcher'; }
+    },
+    specialization: {
+        type: String
+    },
+    yearsOfExperience: {
+        type: Number,
+        default: 0
+    },
+    researchInterests: [{
+        type: String
+    }],
     createdAt: {
         type: Date,
         default: Date.now
     }
 });
 
-// Hash password before saving
+// Hash password
 userSchema.pre('save', async function(next) {
     if (!this.isModified('password')) return next();
     
@@ -39,7 +72,7 @@ userSchema.pre('save', async function(next) {
     next();
 });
 
-// Method to compare password
+// Method for compare password
 userSchema.methods.comparePassword = async function(candidatePassword) {
     return await bcrypt.compare(candidatePassword, this.password);
 };
