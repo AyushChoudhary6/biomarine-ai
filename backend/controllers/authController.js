@@ -27,7 +27,16 @@ exports.register = async (req, res) => {
                 id: user._id,
                 name: user.name,
                 email: user.email,
-                userType: user.userType
+                phone: user.phone,
+                country: user.country,
+                userType: user.userType,
+                qualifications: user.qualifications,
+                popularArticle: user.popularArticle,
+                institute: user.institute,
+                specialization: user.specialization,
+                yearsOfExperience: user.yearsOfExperience,
+                researchInterests: user.researchInterests,
+                createdAt: user.createdAt
             }
         });
     } catch (error) {
@@ -58,7 +67,16 @@ exports.login = async (req, res) => {
                 id: user._id,
                 name: user.name,
                 email: user.email,
-                userType: user.userType
+                phone: user.phone,
+                country: user.country,
+                userType: user.userType,
+                qualifications: user.qualifications,
+                popularArticle: user.popularArticle,
+                institute: user.institute,
+                specialization: user.specialization,
+                yearsOfExperience: user.yearsOfExperience,
+                researchInterests: user.researchInterests,
+                createdAt: user.createdAt
             }
         });
     } catch (error) {

@@ -1,9 +1,12 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Mail, Lock, User, ArrowRight, Eye, EyeOff } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext'
 
 const Login = () => {
+  const { login } = useAuth()
+  const navigate = useNavigate()
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -11,17 +14,26 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [rememberMe, setRememberMe] = useState(false)
+  const [error, setError] = useState('')
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
+    setError('')
     setIsSubmitting(true)
     
-    // Simulate login process
-    setTimeout(() => {
+    try {
+      const result = await login(formData)
+      
+      if (result.success) {
+        navigate('/dashboard')
+      } else {
+        setError(result.error || 'Login failed')
+      }
+    } catch (err) {
+      setError('An unexpected error occurred')
+    } finally {
       setIsSubmitting(false)
-      setFormData({ email: '', password: '' })
-      alert('Login successful! Welcome back.')
-    }, 2000)
+    }
   }
 
   const handleChange = (e) => {
@@ -54,6 +66,13 @@ const Login = () => {
           className="glass rounded-xl p-8"
         >
           <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Error Display */}
+            {error && (
+              <div className="bg-red-500/20 border border-red-500/50 rounded-lg p-4">
+                <p className="text-red-200 text-sm">{error}</p>
+              </div>
+            )}
+            
             {/* Email Field */}
             <div>
               <label htmlFor="email" className="block text-white/70 text-sm font-medium mb-2">

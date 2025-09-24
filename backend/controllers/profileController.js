@@ -12,7 +12,31 @@ exports.getProfile = async (req, res) => {
             researchStats = await ResearchStats.findOne({ userId: user._id });
         }
 
-        res.json({ user, researchStats });
+        // Create comprehensive profile response
+        const profileResponse = {
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                phone: user.phone,
+                country: user.country,
+                userType: user.userType,
+                qualifications: user.qualifications,
+                popularArticle: user.popularArticle,
+                institute: user.institute,
+                specialization: user.specialization,
+                yearsOfExperience: user.yearsOfExperience,
+                researchInterests: user.researchInterests,
+                createdAt: user.createdAt
+            },
+            researchStats: researchStats || {
+                publications: 0,
+                citations: 0,
+                projects: 0
+            }
+        };
+
+        res.json(profileResponse);
     } catch (error) {
         res.status(500).json({ message: 'Server error' });
     }
@@ -20,17 +44,42 @@ exports.getProfile = async (req, res) => {
 
 exports.updateProfile = async (req, res) => {
     try {
-        const { name, email } = req.body;
+        const { 
+            name, 
+            email, 
+            phone, 
+            country, 
+            qualifications, 
+            popularArticle, 
+            institute, 
+            specialization, 
+            yearsOfExperience, 
+            researchInterests 
+        } = req.body;
         
         const user = await User.findById(req.user.id);
         if (!user) return res.status(404).json({ message: 'User not found' });
 
-        // Update basic info
-        user.name = name || user.name;
-        user.email = email || user.email;
+        // Update user fields
+        if (name) user.name = name;
+        if (email) user.email = email;
+        if (phone) user.phone = phone;
+        if (country) user.country = country;
+        if (qualifications) user.qualifications = qualifications;
+        if (popularArticle !== undefined) user.popularArticle = popularArticle;
+        if (institute) user.institute = institute;
+        if (specialization !== undefined) user.specialization = specialization;
+        if (yearsOfExperience !== undefined) user.yearsOfExperience = yearsOfExperience;
+        if (researchInterests) user.researchInterests = researchInterests;
 
         await user.save();
-        res.json({ message: 'Profile updated successfully', user });
+
+        // Return updated user data (excluding password)
+        const updatedUser = await User.findById(user._id).select('-password');
+        res.json({ 
+            message: 'Profile updated successfully', 
+            user: updatedUser 
+        });
     } catch (error) {
         res.status(500).json({ message: 'Server error' });
     }
