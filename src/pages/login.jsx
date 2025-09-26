@@ -50,7 +50,7 @@ const Login = () => {
       } else {
         setError(result.error || 'Login failed')
       }
-    } catch (_err) {
+    } catch {
       setError('An unexpected error occurred')
     } finally {
       setIsSubmitting(false)
@@ -69,7 +69,7 @@ const Login = () => {
       setError('')
       const apiUrl = import.meta?.env?.VITE_API_URL || import.meta?.env?.REACT_APP_API_URL || 'http://localhost:5000/api'
       window.location.href = `${apiUrl}/auth/google`
-    } catch (err) {
+    } catch {
       setError('Failed to initiate Google login. Please try again.')
     }
   }

@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from 'react'
+import React, { useState, useCallback, useRef, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import IndianOceanMap from '../components/ui/IndianOceanMap'
 import { marineClassifier } from '../utils/aiModel'
@@ -93,7 +93,7 @@ const AIModels = () => {
   ]
 
   // Mock species database for Indian Ocean region
-  const indianOceanSpecies = [
+  const indianOceanSpecies = useMemo(() => [
     {
       name: 'Indian Mackerel',
       scientificName: 'Rastrelliger kanagurta',
@@ -121,7 +121,7 @@ const AIModels = () => {
       distribution: 'Indian Ocean pelagic waters',
       characteristics: 'Large pelagic predator, migratory species'
     }
-  ]
+  ], [])
 
   // AI Image Analysis using TensorFlow.js model
   const analyzeImage = useCallback(async (imageFile) => {

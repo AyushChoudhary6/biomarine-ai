@@ -349,7 +349,7 @@ export class MarineSpeciesClassifier {
     }
 
     // Analyze body shape characteristics
-    analyzeBodyShape(imageData) {
+    analyzeBodyShape(_imageData) {
       // Simplified body shape analysis
       let elongated = 0, compressed = 0, fusiform = 0
       
@@ -365,7 +365,7 @@ export class MarineSpeciesClassifier {
     }
 
     // Analyze fin structure
-    analyzeFinStructure(imageData) {
+    analyzeFinStructure(_imageData) {
       // Detect fin patterns and structures
       return {
         dorsalFins: 'single', // Could be 'single', 'double', 'continuous'
@@ -412,7 +412,7 @@ export class MarineSpeciesClassifier {
     }
 
     // Analyze size indicators
-    analyzeSizeIndicators(imageElement) {
+    analyzeSizeIndicators(_imageElement) {
       return {
         estimatedLength: 'medium', // Would need reference objects
         bodyProportions: 'normal',

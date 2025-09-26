@@ -27,7 +27,7 @@ export class ModelDownloader {
         // Try to fetch model.json to check if model exists
         const response = await fetch(`/${dir}/model.json`)
         availability[modelName] = response.ok
-      } catch (_error) {
+      } catch {
         availability[modelName] = false
       }
     }
