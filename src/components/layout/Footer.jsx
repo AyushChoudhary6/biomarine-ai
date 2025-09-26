@@ -97,7 +97,7 @@ const Footer = () => {
           </div>
 
           {/* Footer Sections */}
-          {footerSections.map((section, index) => (
+          {footerSections.map((section, _index) => (
             <div key={section.title}>
               <h4 className="text-foreground font-semibold mb-4">{section.title}</h4>
               <ul className="space-y-2">

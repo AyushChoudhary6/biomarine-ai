@@ -174,7 +174,7 @@ const AIModels = () => {
                       { label: 'Version', value: selectedModelData.version, icon: Settings },
                       { label: 'Parameters', value: selectedModelData.parameters, icon: Brain },
                       { label: 'Training Data', value: selectedModelData.trainingData, icon: Upload }
-                    ].map((stat, index) => (
+                    ].map((stat, _index) => (
                       <div key={stat.label} className="card-minimal text-center">
                         <stat.icon className="w-6 h-6 text-primary-400 mx-auto mb-2" />
                         <p className="text-2xl font-bold text-white mb-1">{stat.value}</p>

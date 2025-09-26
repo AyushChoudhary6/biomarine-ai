@@ -71,7 +71,7 @@ const SignUp = () => {
       } else {
         setError(result.error || 'Registration failed')
       }
-    } catch (err) {
+    } catch (_err) {
       setError('An unexpected error occurred')
     } finally {
       setIsSubmitting(false)

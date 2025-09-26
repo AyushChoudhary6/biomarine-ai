@@ -174,7 +174,7 @@ const About = () => {
                 { year: "2020", event: "Launched collaborative international research programs" },
                 { year: "2022", event: "Integrated machine learning models achieved 95%+ accuracy" },
                 { year: "2024", event: "Advanced AI platform launched for global marine research community" }
-              ].map((milestone, index) => (
+              ].map((milestone, _index) => (
                 <div key={milestone.year} className="flex items-center space-x-6">
                   <div className="flex-shrink-0 w-16 h-16 bg-primary-600 rounded-full flex items-center justify-center">
                     <span className="text-white font-bold text-sm">{milestone.year}</span>

@@ -87,13 +87,13 @@ export class MarineSpeciesClassifier {
         console.log(`📋 Loaded ${this.classes.length} species classes dynamically`)
         return true
         
-      } catch (modelError) {
-        console.warn('Production models not available, loading enhanced fallback models:', modelError)
+      } catch (_modelError) {
+        console.warn('Production models not available, loading enhanced fallback models:', _modelError)
         return await this.loadFallbackModels()
       }
       
-    } catch (error) {
-      console.error('Failed to load any models:', error)
+    } catch (_error) {
+      console.error('Failed to load any models:', _error)
       return await this.loadBasicModel()
     }
   }
@@ -117,8 +117,8 @@ export class MarineSpeciesClassifier {
       } else {
         throw new Error('Classes metadata not found')
       }
-    } catch (error) {
-      console.warn('Could not load dynamic classes, using fallback classes:', error)
+    } catch (_error) {
+      console.warn('Could not load dynamic classes, using fallback classes:', _error)
       this.classes = this.fallbackClasses
       this.classMetadata = {
         classes: this.fallbackClasses,

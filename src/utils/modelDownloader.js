@@ -27,7 +27,7 @@ export class ModelDownloader {
         // Try to fetch model.json to check if model exists
         const response = await fetch(`/${dir}/model.json`)
         availability[modelName] = response.ok
-      } catch (error) {
+      } catch (_error) {
         availability[modelName] = false
       }
     }
@@ -74,12 +74,12 @@ export class ModelDownloader {
       try {
         const result = await this.downloadModel(modelName)
         results.push(result)
-      } catch (error) {
-        console.error(`❌ Failed to download ${modelName}:`, error)
+      } catch (_error) {
+        console.error(`❌ Failed to download ${modelName}:`, _error)
         results.push({
           modelName,
           success: false,
-          error: error.message
+          error: _error.message
         })
       }
     }
@@ -120,9 +120,9 @@ export class ModelDownloader {
       console.log(`✅ ${modelName} model verification passed`)
       return { valid: true, modelName }
       
-    } catch (error) {
-      console.error(`❌ ${modelName} model verification failed:`, error)
-      return { valid: false, modelName, error: error.message }
+    } catch (_error) {
+      console.error(`❌ ${modelName} model verification failed:`, _error)
+      return { valid: false, modelName, error: _error.message }
     }
   }
 

@@ -109,7 +109,7 @@ const Profile = () => {
       } else {
         setError(result.error || 'Failed to update profile')
       }
-    } catch (err) {
+    } catch (_err) {
       setError('An unexpected error occurred')
     } finally {
       setUpdateLoading(false)

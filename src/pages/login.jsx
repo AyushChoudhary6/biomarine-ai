@@ -50,7 +50,7 @@ const Login = () => {
       } else {
         setError(result.error || 'Login failed')
       }
-    } catch (err) {
+    } catch (_err) {
       setError('An unexpected error occurred')
     } finally {
       setIsSubmitting(false)
