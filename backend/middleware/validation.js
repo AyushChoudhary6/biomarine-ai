@@ -4,7 +4,7 @@ const validateUser = (data) => {
     const schema = Joi.object({
         name: Joi.string().required().min(2).max(50),
         email: Joi.string().email().required(),
-        phone: Joi.string().optional().min(10).max(15).pattern(/^\+?[\d\s\-\(\)]+$/),
+        phone: Joi.string().optional().min(10).max(15).pattern(/^\+?[\d\s\-()]+$/),
         password: Joi.string().required().min(6),
         country: Joi.string().required(),
         userType: Joi.string().valid('student', 'researcher').required(),
@@ -47,7 +47,7 @@ const validateRegistration = (data) => {
     const schema = Joi.object({
         name: Joi.string().required().min(2).max(50),
         email: Joi.string().email().required(),
-        phone: Joi.string().required().min(10).max(15).pattern(/^\+?[\d\s\-\(\)]+$/),
+        phone: Joi.string().required().min(10).max(15).pattern(/^\+?[\d\s\-()]+$/),
         password: Joi.string().required().min(6),
         country: Joi.string().required(),
         userType: Joi.string().valid('student', 'researcher').required(),

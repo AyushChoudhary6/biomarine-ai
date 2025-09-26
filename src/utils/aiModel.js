@@ -1142,7 +1142,7 @@ export class MarineSpeciesClassifier {
     this.isLoaded = false
     
     // Force garbage collection
-    if (typeof gc !== 'undefined') {
+    if (typeof gc !== 'undefined' && gc) {
       gc()
     }
     

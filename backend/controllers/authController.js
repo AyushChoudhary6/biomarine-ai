@@ -1,6 +1,6 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
-const { validateUser, validateRegistration } = require('../middleware/validation');
+const { validateRegistration } = require('../middleware/validation');
 
 exports.register = async (req, res) => {
     try {
