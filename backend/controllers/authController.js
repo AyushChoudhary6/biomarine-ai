@@ -12,32 +12,24 @@ exports.register = async (req, res) => {
         }
 
         // Check if user already exists by email
-        let existingUser = await User.findOne({ email: req.body.email });
+        let existingUser = await User.findByEmail(req.body.email);
         if (existingUser) {
             return res.status(400).json({ message: 'User with this email already exists' });
         }
 
-        // Check if phone number already exists (if provided)
-        if (req.body.phone) {
-            existingUser = await User.findOne({ phone: req.body.phone });
-            if (existingUser) {
-                return res.status(400).json({ message: 'User with this phone number already exists' });
-            }
-        }
-
         // Create new user
-        user = new User(req.body);
+        const user = new User(req.body);
         await user.save();
 
         // Generate JWT token
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+        const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
             expiresIn: '1d'
         });
 
         res.status(201).json({
             token,
             user: {
-                id: user._id,
+                id: user.id,
                 name: user.name,
                 email: user.email,
                 phone: user.phone,
@@ -55,19 +47,10 @@ exports.register = async (req, res) => {
     } catch (error) {
         console.error('Registration error:', error);
         
-        // Handle specific MongoDB errors
-        if (error.code === 11000) {
-            const field = Object.keys(error.keyPattern)[0];
+        // Handle DynamoDB errors
+        if (error.message.includes('already exists')) {
             return res.status(400).json({ 
-                message: `User with this ${field} already exists` 
-            });
-        }
-        
-        // Handle validation errors
-        if (error.name === 'ValidationError') {
-            const messages = Object.values(error.errors).map(err => err.message);
-            return res.status(400).json({ 
-                message: messages.join(', ') 
+                message: error.message 
             });
         }
         
@@ -80,7 +63,7 @@ exports.login = async (req, res) => {
         const { email, password } = req.body;
 
         // Check if user exists
-        const user = await User.findOne({ email });
+        const user = await User.findByEmail(email);
         if (!user) return res.status(400).json({ message: 'Invalid credentials' });
 
         // Verify password
@@ -88,14 +71,14 @@ exports.login = async (req, res) => {
         if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
 
         // Generate JWT token
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+        const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
             expiresIn: '1d'
         });
 
         res.json({
             token,
             user: {
-                id: user._id,
+                id: user.id,
                 name: user.name,
                 email: user.email,
                 phone: user.phone,
@@ -111,6 +94,7 @@ exports.login = async (req, res) => {
             }
         });
     } catch (error) {
+        console.error('Login error:', error);
         res.status(500).json({ message: 'Server error' });
     }
 };

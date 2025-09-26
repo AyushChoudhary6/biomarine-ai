@@ -1,39 +1,35 @@
-const mongoose = require('mongoose');
+const { connectDB } = require('./config/database');
+const { setupDynamoDB } = require('./setup-dynamodb');
 require('dotenv').config();
 
 const testConnection = async () => {
     try {
-        console.log('Testing MongoDB connection...');
-        console.log('Connection string:', process.env.MONGODB_URI);
+        console.log('Testing DynamoDB connection...');
+        console.log('Region:', process.env.AWS_REGION || 'us-west-2');
         
-        await mongoose.connect(process.env.MONGODB_URI);
-        console.log('✅ MongoDB connected successfully!');
+        // Connect to DynamoDB
+        await connectDB();
+        console.log('✅ DynamoDB connected successfully!');
         
-        // Test creating a simple document
-        const testSchema = new mongoose.Schema({ test: String });
-        const TestModel = mongoose.model('Test', testSchema);
+        // Setup tables
+        await setupDynamoDB();
+        console.log('✅ DynamoDB tables setup complete!');
         
-        const testDoc = new TestModel({ test: 'connection test' });
-        await testDoc.save();
-        console.log('✅ Database write test successful!');
-        
-        await TestModel.deleteOne({ test: 'connection test' });
-        console.log('✅ Database delete test successful!');
-        
-        console.log('🎉 Database setup complete! Your MongoDB is ready to use.');
+        console.log('🎉 Database setup complete! Your DynamoDB is ready to use.');
+        console.log('💡 Tables created with PAY_PER_REQUEST billing (free tier friendly)');
         
     } catch (error) {
-        console.error('❌ MongoDB connection failed:', error.message);
+        console.error('❌ DynamoDB setup failed:', error.message);
         console.log('\n📋 Troubleshooting steps:');
-        console.log('1. Check if MongoDB is running locally (if using local MongoDB)');
-        console.log('2. Verify your MONGODB_URI in the .env file');
-        console.log('3. If using MongoDB Atlas, check your network access settings');
-        console.log('4. Ensure your database user has proper permissions');
-        console.log('\n💡 Consider using MongoDB Atlas (free cloud database):');
-        console.log('   https://www.mongodb.com/atlas');
-    } finally {
-        await mongoose.disconnect();
-        process.exit(0);
+        console.log('1. Check your AWS credentials in the .env file');
+        console.log('2. Verify your AWS user has DynamoDB permissions');
+        console.log('3. Ensure you are using the correct AWS region (us-west-2)');
+        console.log('4. Check your internet connection');
+        console.log('\n💡 AWS Free Tier includes:');
+        console.log('   - 25 GB of DynamoDB storage');
+        console.log('   - 25 RCU and 25 WCU per month');
+        console.log('   - Perfect for development and small applications');
+        process.exit(1);
     }
 };
 

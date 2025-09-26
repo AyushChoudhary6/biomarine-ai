@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: biomarine-backend
+  namespace: biomarine
+  labels:
+    app: biomarine-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: biomarine-backend
+  template:
+    metadata:
+      labels:
+        app: biomarine-backend
+    spec:
+      containers:
+        - name: backend
+          image: 245991315809.dkr.ecr.us-west-2.amazonaws.com/biomarine-backend:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5000
+          envFrom:
+            - configMapRef:
+                name: biomarine-config
+            - secretRef:
+                name: biomarine-secrets
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: biomarine-backend
+  namespace: biomarine
+  labels:
+    app: biomarine-backend
+spec:
+  selector:
+    app: biomarine-backend
+  ports:
+    - name: http
+      port: 5000
+      targetPort: 5000
+  type: ClusterIP
+

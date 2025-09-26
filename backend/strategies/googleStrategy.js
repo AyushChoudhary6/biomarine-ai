@@ -14,7 +14,7 @@ module.exports = passport => {
             async (accessToken, refreshToken, profile, done) => {
                 try {
                     // Check if user exists
-                    let user = await User.findOne({ email: profile.emails[0].value });
+                    let user = await User.findByEmail(profile.emails[0].value);
 
                     if (user) {
                         return done(null, user);

@@ -16,15 +16,15 @@ router.get('/google/callback',
   passport.authenticate('google', { session: false }),
   (req, res) => {
     try {
-      // Generate JWT token for the user
-      const token = jwt.sign({ id: req.user._id }, process.env.JWT_SECRET, {
+      // Generate JWT token for the user (use 'id' instead of '_id' for DynamoDB)
+      const token = jwt.sign({ id: req.user.id }, process.env.JWT_SECRET, {
         expiresIn: '1d'
       });
 
       // Redirect to frontend with token
-      const frontendURL = process.env.FRONTEND_URL || 'http://localhost:5173';
+      const frontendURL = process.env.FRONTEND_URL || 'http://localhost';
       res.redirect(`${frontendURL}/auth/callback?token=${token}&user=${encodeURIComponent(JSON.stringify({
-        id: req.user._id,
+        id: req.user.id,
         name: req.user.name,
         email: req.user.email,
         phone: req.user.phone,
@@ -40,7 +40,7 @@ router.get('/google/callback',
       }))}`);
     } catch (error) {
       console.error('Google OAuth callback error:', error);
-      const frontendURL = process.env.FRONTEND_URL || 'http://localhost:5173';
+      const frontendURL = process.env.FRONTEND_URL || 'http://localhost';
       res.redirect(`${frontendURL}/login?error=oauth_failed`);
     }
   }

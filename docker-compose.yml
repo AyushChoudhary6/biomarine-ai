@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  # DynamoDB Table Setup Service
+  dynamodb-setup:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: biomarine-dynamodb-setup
+    environment:
+      AWS_REGION: ${AWS_REGION:-us-west-2}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      USERS_TABLE: ${USERS_TABLE:-biomarine-users}
+      RESEARCH_STATS_TABLE: ${RESEARCH_STATS_TABLE:-biomarine-research-stats}
+    command: ["npm", "run", "setup-db"]
+    networks:
+      - biomarine-network
+
+  # Backend Service
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: biomarine-backend
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+      AWS_REGION: ${AWS_REGION:-us-west-2}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      USERS_TABLE: ${USERS_TABLE:-biomarine-users}
+      RESEARCH_STATS_TABLE: ${RESEARCH_STATS_TABLE:-biomarine-research-stats}
+      JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-key}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      LINKEDIN_CLIENT_ID: ${LINKEDIN_CLIENT_ID}
+      LINKEDIN_CLIENT_SECRET: ${LINKEDIN_CLIENT_SECRET}
+    depends_on:
+      dynamodb-setup:
+        condition: service_completed_successfully
+    networks:
+      - biomarine-network
+    volumes:
+      - ./backend/logs:/app/logs
+
+  # Frontend Service
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: biomarine-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - biomarine-network
+
+networks:
+  biomarine-network:
+    driver: bridge

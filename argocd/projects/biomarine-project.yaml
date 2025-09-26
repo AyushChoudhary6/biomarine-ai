@@ -1,0 +1,98 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: biomarine-ai
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  description: Biomarine AI Application Project
+  
+  # Source repositories
+  sourceRepos:
+    - 'https://github.com/AyushChoudhary6/biomarine-ai.git'
+    - '*'  # Allow any source (for Helm repos, etc.)
+  
+  # Destination clusters and namespaces
+  destinations:
+    - namespace: biomarine
+      server: https://kubernetes.default.svc
+    - namespace: kube-system
+      server: https://kubernetes.default.svc
+    - namespace: ingress-nginx
+      server: https://kubernetes.default.svc
+    - namespace: argocd
+      server: https://kubernetes.default.svc
+  
+  # Cluster resource whitelist
+  clusterResourceWhitelist:
+    - group: ''
+      kind: Namespace
+    - group: 'networking.k8s.io'
+      kind: Ingress
+    - group: 'networking.k8s.io'
+      kind: IngressClass
+    - group: 'rbac.authorization.k8s.io'
+      kind: ClusterRole
+    - group: 'rbac.authorization.k8s.io'
+      kind: ClusterRoleBinding
+    - group: 'apiextensions.k8s.io'
+      kind: CustomResourceDefinition
+    - group: 'admissionregistration.k8s.io'
+      kind: MutatingWebhookConfiguration
+    - group: 'admissionregistration.k8s.io'
+      kind: ValidatingWebhookConfiguration
+  
+  # Namespace resource whitelist
+  namespaceResourceWhitelist:
+    - group: ''
+      kind: ConfigMap
+    - group: ''
+      kind: Secret
+    - group: ''
+      kind: Service
+    - group: ''
+      kind: ServiceAccount
+    - group: 'apps'
+      kind: Deployment
+    - group: 'apps'
+      kind: ReplicaSet
+    - group: 'apps'
+      kind: StatefulSet
+    - group: 'apps'
+      kind: DaemonSet
+    - group: 'batch'
+      kind: Job
+    - group: 'batch'
+      kind: CronJob
+    - group: 'networking.k8s.io'
+      kind: NetworkPolicy
+    - group: 'policy'
+      kind: PodDisruptionBudget
+    - group: 'rbac.authorization.k8s.io'
+      kind: Role
+    - group: 'rbac.authorization.k8s.io'
+      kind: RoleBinding
+    - group: 'autoscaling'
+      kind: HorizontalPodAutoscaler
+    - group: 'networking.k8s.io'
+      kind: Ingress
+  
+  # Roles for this project
+  roles:
+    - name: admin
+      description: Admin access to biomarine-ai project
+      policies:
+        - p, proj:biomarine-ai:admin, applications, *, biomarine-ai/*, allow
+        - p, proj:biomarine-ai:admin, repositories, *, *, allow
+      groups:
+        - biomarine-ai:admin
+    
+    - name: developer
+      description: Developer access to biomarine-ai project
+      policies:
+        - p, proj:biomarine-ai:developer, applications, get, biomarine-ai/*, allow
+        - p, proj:biomarine-ai:developer, applications, sync, biomarine-ai/*, allow
+        - p, proj:biomarine-ai:developer, repositories, get, *, allow
+      groups:
+        - biomarine-ai:developer

@@ -1,0 +1,20 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: biomarine-dynamodb-setup
+  namespace: biomarine
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: setup
+          image: your-account.dkr.ecr.us-west-2.amazonaws.com/biomarine-backend:latest
+          imagePullPolicy: IfNotPresent
+          command: ["npm", "run", "setup-db"]
+          envFrom:
+            - configMapRef:
+                name: biomarine-config
+            - secretRef:
+                name: biomarine-secrets
+

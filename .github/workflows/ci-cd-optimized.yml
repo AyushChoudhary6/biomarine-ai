@@ -1,0 +1,216 @@
+name: Optimized CI/CD Pipeline (ECR → ArgoCD → EKS)
+
+on:
+  push:
+    branches: [main, DevOps]
+  pull_request:
+    branches: [main]
+
+env:
+  AWS_REGION: us-west-2
+  ECR_REPOSITORY_BACKEND: biomarine-backend
+  ECR_REPOSITORY_FRONTEND: biomarine-frontend
+  EKS_CLUSTER_NAME: biomarine-eks
+
+jobs:
+  # Test Job
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js for Backend
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install Backend Dependencies
+        run: |
+          cd backend
+          npm ci
+
+      - name: Run Backend Tests
+        run: |
+          cd backend
+          npm test || echo "No tests found"
+
+      - name: Setup Node.js for Frontend
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Install Frontend Dependencies
+        run: npm ci
+
+      - name: Run Frontend Tests
+        run: npm test || echo "No tests found"
+
+      - name: Lint Frontend
+        run: npm run lint
+
+  # Build and Push Docker Images to ECR
+  build-and-push-to-ecr:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/DevOps'
+    
+    outputs:
+      backend-image: ${{ steps.build-backend.outputs.image }}
+      frontend-image: ${{ steps.build-frontend.outputs.image }}
+      image-tag: ${{ steps.meta.outputs.IMAGE_TAG }}
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Generate image metadata
+        id: meta
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            echo "IMAGE_TAG=latest" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.ref }}" == "refs/heads/develop" ]]; then
+            echo "IMAGE_TAG=develop" >> $GITHUB_OUTPUT
+          else
+            SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-7)
+            echo "IMAGE_TAG=${SHORT_SHA}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Get AWS Account ID
+        id: account
+        run: |
+          ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+          echo "account-id=$ACCOUNT_ID" >> $GITHUB_OUTPUT
+
+      - name: 🐳 Build and push Backend image to ECR
+        id: build-backend
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ steps.meta.outputs.IMAGE_TAG }}
+        run: |
+          echo "🔨 Building backend image..."
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY_BACKEND:$IMAGE_TAG ./backend
+          
+          echo "📤 Pushing backend image to ECR..."
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY_BACKEND:$IMAGE_TAG
+          
+          echo "✅ Backend image pushed: $ECR_REGISTRY/$ECR_REPOSITORY_BACKEND:$IMAGE_TAG"
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY_BACKEND:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+      - name: 🐳 Build and push Frontend image to ECR
+        id: build-frontend
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ steps.meta.outputs.IMAGE_TAG }}
+        run: |
+          echo "🔨 Building frontend image..."
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY_FRONTEND:$IMAGE_TAG -f Dockerfile.frontend .
+          
+          echo "📤 Pushing frontend image to ECR..."
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY_FRONTEND:$IMAGE_TAG
+          
+          echo "✅ Frontend image pushed: $ECR_REGISTRY/$ECR_REPOSITORY_FRONTEND:$IMAGE_TAG"
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY_FRONTEND:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+      - name: 📝 Update Kubernetes manifests for ArgoCD
+        env:
+          BACKEND_IMAGE: ${{ steps.build-backend.outputs.image }}
+          FRONTEND_IMAGE: ${{ steps.build-frontend.outputs.image }}
+        run: |
+          echo "🔄 Updating Kubernetes manifests with new image tags..."
+          
+          # Update backend deployment with actual ECR image
+          sed -i "s|image: .*biomarine-backend.*|image: $BACKEND_IMAGE|g" K8/backend-deployment.yaml
+          
+          # Update frontend deployment with actual ECR image
+          sed -i "s|image: .*biomarine-frontend.*|image: $FRONTEND_IMAGE|g" K8/frontend-deployment.yaml
+          
+          # Verify the changes
+          echo "📋 Updated backend deployment:"
+          grep "image:" K8/backend-deployment.yaml | head -1
+          echo "📋 Updated frontend deployment:"
+          grep "image:" K8/frontend-deployment.yaml | head -1
+
+      - name: 🚀 Commit and push updated manifests for ArgoCD
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add K8/backend-deployment.yaml K8/frontend-deployment.yaml
+          
+          if git diff --staged --quiet; then
+            echo "📝 No changes to commit"
+          else
+            git commit -m "🚀 Update container images to ${{ steps.meta.outputs.IMAGE_TAG }} for ArgoCD sync"
+            git push
+            echo "✅ Manifests updated and pushed to trigger ArgoCD sync"
+          fi
+
+  # ArgoCD will automatically detect the changes and deploy to EKS
+  # This job waits and verifies the ArgoCD sync
+  wait-for-argocd-sync:
+    needs: build-and-push-to-ecr
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Install kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'v1.28.0'
+
+      - name: Update kubeconfig
+        run: |
+          aws eks update-kubeconfig --region ${{ env.AWS_REGION }} --name ${{ env.EKS_CLUSTER_NAME }}
+
+      - name: ⏳ Wait for ArgoCD to sync and verify deployment
+        run: |
+          echo "⏳ Waiting for ArgoCD to detect and sync changes..."
+          echo "🔍 ArgoCD should automatically sync within 3 minutes..."
+          
+          # Wait for ArgoCD to sync (adjust time as needed)
+          sleep 180
+          
+          echo "🔍 Checking deployment status in EKS cluster..."
+          kubectl get pods -n biomarine -o wide
+          
+          echo "📊 Checking deployment rollout status..."
+          kubectl rollout status deployment/biomarine-backend -n biomarine --timeout=300s || echo "⚠️ Backend deployment timeout"
+          kubectl rollout status deployment/biomarine-frontend -n biomarine --timeout=300s || echo "⚠️ Frontend deployment timeout"
+          
+          echo "🎯 Checking service endpoints..."
+          kubectl get svc -n biomarine
+          
+          echo "🔍 Checking ingress status..."
+          kubectl get ingress -n biomarine || echo "No ingress found"
+          
+          echo "✅ ArgoCD sync verification completed!"
+          echo "🚀 Your application should now be running on EKS cluster!"

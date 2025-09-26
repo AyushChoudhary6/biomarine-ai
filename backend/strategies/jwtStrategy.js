@@ -18,6 +18,7 @@ module.exports = passport => {
                 }
                 return done(null, false);
             } catch (error) {
+                console.error('JWT Strategy error:', error);
                 return done(error, false);
             }
         })

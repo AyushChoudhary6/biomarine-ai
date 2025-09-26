@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: biomarine-frontend
+  namespace: biomarine
+  labels:
+    app: biomarine-frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: biomarine-frontend
+  template:
+    metadata:
+      labels:
+        app: biomarine-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: 245991315809.dkr.ecr.us-west-2.amazonaws.com/biomarine-frontend:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "64Mi"
+            limits:
+              cpu: "200m"
+              memory: "256Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: biomarine-frontend
+  namespace: biomarine
+  labels:
+    app: biomarine-frontend
+spec:
+  selector:
+    app: biomarine-frontend
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+  type: ClusterIP
+

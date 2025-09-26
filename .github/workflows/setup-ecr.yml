@@ -1,0 +1,136 @@
+name: Setup ECR Repositories
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/setup-ecr.yml'
+
+env:
+  AWS_REGION: us-west-2
+
+jobs:
+  setup-ecr:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Create ECR repositories
+        run: |
+          # Create backend repository
+          aws ecr describe-repositories --repository-names biomarine-backend || \
+          aws ecr create-repository --repository-name biomarine-backend \
+            --image-scanning-configuration scanOnPush=true \
+            --encryption-configuration encryptionType=AES256
+          
+          # Create frontend repository
+          aws ecr describe-repositories --repository-names biomarine-frontend || \
+          aws ecr create-repository --repository-name biomarine-frontend \
+            --image-scanning-configuration scanOnPush=true \
+            --encryption-configuration encryptionType=AES256
+
+      - name: Set ECR lifecycle policies
+        run: |
+          # Backend lifecycle policy
+          aws ecr put-lifecycle-policy --repository-name biomarine-backend --lifecycle-policy-text '{
+            "rules": [
+              {
+                "rulePriority": 1,
+                "description": "Keep last 10 production images",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["latest", "v"],
+                  "countType": "imageCountMoreThan",
+                  "countNumber": 10
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 2,
+                "description": "Keep last 5 develop images",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["develop"],
+                  "countType": "imageCountMoreThan",
+                  "countNumber": 5
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 3,
+                "description": "Delete untagged images after 1 day",
+                "selection": {
+                  "tagStatus": "untagged",
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 1
+                },
+                "action": {
+                  "type": "expire"
+                }
+              }
+            ]
+          }'
+
+          # Frontend lifecycle policy
+          aws ecr put-lifecycle-policy --repository-name biomarine-frontend --lifecycle-policy-text '{
+            "rules": [
+              {
+                "rulePriority": 1,
+                "description": "Keep last 10 production images",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["latest", "v"],
+                  "countType": "imageCountMoreThan",
+                  "countNumber": 10
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 2,
+                "description": "Keep last 5 develop images",
+                "selection": {
+                  "tagStatus": "tagged",
+                  "tagPrefixList": ["develop"],
+                  "countType": "imageCountMoreThan",
+                  "countNumber": 5
+                },
+                "action": {
+                  "type": "expire"
+                }
+              },
+              {
+                "rulePriority": 3,
+                "description": "Delete untagged images after 1 day",
+                "selection": {
+                  "tagStatus": "untagged",
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 1
+                },
+                "action": {
+                  "type": "expire"
+                }
+              }
+            ]
+          }'
+
+      - name: Output ECR repository URIs
+        run: |
+          ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+          echo "Backend ECR URI: $ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/biomarine-backend"
+          echo "Frontend ECR URI: $ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/biomarine-frontend"

@@ -1,0 +1,98 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: biomarine-ai-backend
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: biomarine-ai
+  
+  source:
+    repoURL: https://github.com/AyushChoudhary6/biomarine-ai.git
+    targetRevision: main
+    path: K8
+    
+    # Directory/Kustomize source
+    directory:
+      recurse: false
+      include: |
+        backend-deployment.yaml
+        secrets.yaml
+        configmap.yaml
+        namespace.yaml
+  
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: biomarine
+  
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - PruneLast=true
+      - ApplyOutOfSyncOnly=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+  
+  # Health check for the application
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jsonPointers:
+        - /spec/replicas
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: biomarine-ai-frontend
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: biomarine-ai
+  
+  source:
+    repoURL: https://github.com/AyushChoudhary6/biomarine-ai.git
+    targetRevision: main
+    path: K8
+    
+    # Directory/Kustomize source
+    directory:
+      recurse: false
+      include: |
+        frontend-deployment.yaml
+        ingress.yaml
+  
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: biomarine
+  
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - PruneLast=true
+      - ApplyOutOfSyncOnly=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+  
+  # Health check for the application
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jsonPointers:
+        - /spec/replicas

@@ -3,19 +3,19 @@ const ResearchStats = require('../models/ResearchStats');
 
 exports.getProfile = async (req, res) => {
     try {
-        const user = await User.findById(req.user.id).select('-password');
+        const user = await User.findById(req.user.id);
         if (!user) return res.status(404).json({ message: 'User not found' });
 
         // Get research stats if user is a researcher
         let researchStats = null;
         if (user.userType === 'researcher') {
-            researchStats = await ResearchStats.findOne({ userId: user._id });
+            researchStats = await ResearchStats.findByUserId(user.id);
         }
 
         // Create comprehensive profile response
         const profileResponse = {
             user: {
-                id: user._id,
+                id: user.id,
                 name: user.name,
                 email: user.email,
                 phone: user.phone,
@@ -29,7 +29,12 @@ exports.getProfile = async (req, res) => {
                 researchInterests: user.researchInterests,
                 createdAt: user.createdAt
             },
-            researchStats: researchStats || {
+            researchStats: researchStats ? {
+                publications: researchStats.publications,
+                citations: researchStats.citations,
+                projects: researchStats.projects,
+                lastUpdated: researchStats.lastUpdated
+            } : {
                 publications: 0,
                 citations: 0,
                 projects: 0
@@ -38,6 +43,7 @@ exports.getProfile = async (req, res) => {
 
         res.json(profileResponse);
     } catch (error) {
+        console.error('Get profile error:', error);
         res.status(500).json({ message: 'Server error' });
     }
 };
@@ -60,27 +66,42 @@ exports.updateProfile = async (req, res) => {
         const user = await User.findById(req.user.id);
         if (!user) return res.status(404).json({ message: 'User not found' });
 
-        // Update user fields
-        if (name) user.name = name;
-        if (email) user.email = email;
-        if (phone) user.phone = phone;
-        if (country) user.country = country;
-        if (qualifications) user.qualifications = qualifications;
-        if (popularArticle !== undefined) user.popularArticle = popularArticle;
-        if (institute) user.institute = institute;
-        if (specialization !== undefined) user.specialization = specialization;
-        if (yearsOfExperience !== undefined) user.yearsOfExperience = yearsOfExperience;
-        if (researchInterests) user.researchInterests = researchInterests;
+        // Prepare update object
+        const updates = {};
+        if (name) updates.name = name;
+        if (email) updates.email = email;
+        if (phone) updates.phone = phone;
+        if (country) updates.country = country;
+        if (qualifications) updates.qualifications = qualifications;
+        if (popularArticle !== undefined) updates.popularArticle = popularArticle;
+        if (institute) updates.institute = institute;
+        if (specialization !== undefined) updates.specialization = specialization;
+        if (yearsOfExperience !== undefined) updates.yearsOfExperience = yearsOfExperience;
+        if (researchInterests) updates.researchInterests = researchInterests;
 
-        await user.save();
+        // Update user
+        const updatedUser = await user.update(updates);
 
-        // Return updated user data (excluding password)
-        const updatedUser = await User.findById(user._id).select('-password');
         res.json({ 
             message: 'Profile updated successfully', 
-            user: updatedUser 
+            user: {
+                id: updatedUser.id,
+                name: updatedUser.name,
+                email: updatedUser.email,
+                phone: updatedUser.phone,
+                country: updatedUser.country,
+                userType: updatedUser.userType,
+                qualifications: updatedUser.qualifications,
+                popularArticle: updatedUser.popularArticle,
+                institute: updatedUser.institute,
+                specialization: updatedUser.specialization,
+                yearsOfExperience: updatedUser.yearsOfExperience,
+                researchInterests: updatedUser.researchInterests,
+                createdAt: updatedUser.createdAt
+            }
         });
     } catch (error) {
+        console.error('Update profile error:', error);
         res.status(500).json({ message: 'Server error' });
     }
 };
