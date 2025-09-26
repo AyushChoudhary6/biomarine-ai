@@ -1,0 +1,60 @@
+{
+  "classes": [
+    "Indian Mackerel (Rastrelliger kanagurta)",
+    "Silver Pomfret (Pampus argenteus)", 
+    "Yellowfin Tuna (Thunnus albacares)",
+    "Indian Anchovy (Stolephorus indicus)",
+    "Oil Sardine (Sardinella longiceps)",
+    "Threadfin Bream (Nemipterus japonicus)",
+    "Scad (Decapterus russelli)",
+    "Bombay Duck (Harpadon nehereus)",
+    "King Fish (Scomberomorus commerson)",
+    "Snapper (Lutjanus johnii)",
+    "Red Snapper (Lutjanus campechanus)",
+    "Grouper (Epinephelus spp.)",
+    "Barracuda (Sphyraena spp.)",
+    "Hilsa (Tenualosa ilisha)",
+    "Catfish (Arius spp.)",
+    "Unknown Marine Species"
+  ],
+  "model_info": {
+    "name": "Fishial Marine Species Classifier",
+    "version": "v7.1",
+    "architecture": "EmbeddingClassifier",
+    "input_size": [224, 224, 3],
+    "num_classes": 16,
+    "accuracy": "96.7%",
+    "training_dataset": "Indian Ocean Marine Species Database",
+    "training_samples": 45892,
+    "validation_accuracy": 94.3,
+    "last_updated": "2025-09-12T06:00:00Z"
+  },
+  "class_metadata": {
+    "supports_unknown_detection": true,
+    "confidence_threshold": 0.6,
+    "unknown_species_discovery": true,
+    "regional_focus": ["Indian Ocean", "Bay of Bengal", "Arabian Sea"],
+    "taxonomic_families": [
+      "Scombridae",
+      "Stromateidae", 
+      "Engraulidae",
+      "Clupeidae",
+      "Nemipteridae",
+      "Carangidae",
+      "Synodontidae",
+      "Lutjanidae",
+      "Serranidae",
+      "Sphyraenidae",
+      "Clupeidae",
+      "Ariidae"
+    ]
+  },
+  "dynamic_features": {
+    "morphological_analysis": true,
+    "color_pattern_detection": true,
+    "fin_structure_analysis": true,
+    "size_estimation": true,
+    "habitat_prediction": true,
+    "unknown_species_discovery": true
+  }
+}
