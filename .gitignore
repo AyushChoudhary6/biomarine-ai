@@ -99,8 +99,10 @@ cdk.out/
 # AWS SAM
 .aws-sam/
 
-# AWS CLI v2 zip file
+# AWS CLI v2 zip file and binaries
 awscliv2.zip
+aws/
+.bin/
 
 # =============================================================================
 # TERRAFORM
@@ -135,12 +137,14 @@ override.tf.json
 .terraformrc
 terraform.rc
 
-# Terraform lock file (uncomment if you want to ignore it)
-# .terraform.lock.hcl
-
-# Terraform directories
+# Terraform directories (contains large provider binaries)
 .terraform/
 .terraform.lock.hcl
+
+# Terraform binaries
+terraform/.bin/
+**/terraform.exe
+**/terraform
 
 # =============================================================================
 # KUBERNETES & DOCKER
@@ -160,9 +164,11 @@ docker-compose.local.yml
 # Helm
 charts/*.tgz
 
-# Kubectl config
+# Kubectl config and binary
 kubeconfig
 kubeconfig.*
+kubectl.exe
+kubectl
 
 # =============================================================================
 # CI/CD & DEPLOYMENT
