@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  # Frontend application
+  biomarine-frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - biomarine-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Optional: Backend API service
+  # biomarine-backend:
+  #   image: biomarine-api:latest
+  #   ports:
+  #     - "3000:3000"
+  #   environment:
+  #     - DATABASE_URL=postgresql://user:password@db:5432/biomarine
+  #   networks:
+  #     - biomarine-network
+  #   depends_on:
+  #     - db
+
+  # Optional: Database service
+  # db:
+  #   image: postgres:15-alpine
+  #   environment:
+  #     POSTGRES_DB: biomarine
+  #     POSTGRES_USER: user
+  #     POSTGRES_PASSWORD: password
+  #   volumes:
+  #     - postgres-data:/var/lib/postgresql/data
+  #   networks:
+  #     - biomarine-network
+
+networks:
+  biomarine-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
