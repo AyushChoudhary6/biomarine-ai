@@ -8,9 +8,19 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
+# ML model files
+models-ai/**/*.pt
+models-ai/**/*.ts
+models-ai/**/*.pth
+models-ai/**/*.onnx
+models-ai/**/*.weights
+models-ai/**/*.pb
+models-ai/**/__pycache__/
+models-ai/**/*.pyc
 dist
 dist-ssr
 *.local
+
 
 # Environment files
 .env

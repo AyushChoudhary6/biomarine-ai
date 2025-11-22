@@ -17,6 +17,11 @@ const OtolithGallery = React.lazy(() => import('./pages/OtolithGallery'))
 const AIModels = React.lazy(() => import('./pages/AIModels'))
 const About = React.lazy(() => import('./pages/About'))
 const Contact = React.lazy(() => import('./pages/Contact'))
+const Signup = React.lazy(() => import('./pages/signup'))
+const Login = React.lazy(() => import('./pages/login'))
+const Profile = React.lazy(() => import('./pages/profile'))
+const AuthCallback = React.lazy(() => import('./pages/AuthCallback'))
+
 
 // Error Boundary for better error handling
 class ErrorBoundary extends React.Component {
@@ -116,6 +121,11 @@ function App() {
               <Route path="/upload" element={<DataUpload />} />
               <Route path="/otoliths" element={<OtolithGallery />} />
               <Route path="/ai-models" element={<AIModels />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/auth/callback" element={<AuthCallback />} />
+
+              <Route path="/signup" element={<Signup />} />
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
               

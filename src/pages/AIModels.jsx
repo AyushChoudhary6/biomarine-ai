@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import IndianOceanMap from '../components/ui/IndianOceanMap'
-import { marineClassifier } from '../utils/aiModel'
+import api from '../utils/api'
 import { 
   Brain, 
   Download, 
@@ -123,75 +123,54 @@ const AIModels = () => {
     }
   ]
 
-  // AI Image Analysis using TensorFlow.js model
+  // AI Image Analysis using Flask backend
   const analyzeImage = useCallback(async (imageFile) => {
-    setIsAnalyzing(true)
-    
+    setIsAnalyzing(true);
+    setAnalysisResult(null);
+
     try {
-      // Create image element for processing
-      const imageElement = document.createElement('img')
-      imageElement.src = URL.createObjectURL(imageFile)
+      const formData = new FormData();
+      formData.append('image', imageFile);
+
+      // Send the image to the Flask backend
+      const response = await api.post('/predict', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        baseURL: 'http://localhost:5000', // Direct to Flask server
+      });
+
+      if (!response.data.success) {
+        throw new Error(response.data.error || 'Analysis failed');
+      }
+
+      const predictions = response.data.predictions;
+      if (!predictions || predictions.length === 0) {
+        throw new Error('No predictions received');
+      }
+
+      const topPrediction = predictions[0];
+      const speciesInfo = indianOceanSpecies.find(s => 
+        s.scientificName.toLowerCase() === topPrediction.species_id.toLowerCase()
+      ) || {
+        name: topPrediction.name,
+        scientificName: topPrediction.species_id,
+        habitat: 'Information not available',
+        conservationStatus: 'Unknown',
       
-      await new Promise((resolve) => {
-        imageElement.onload = resolve
-      })
-      
-      // Use the enhanced AI model pipeline for classification
-      const predictions = await marineClassifier.classifyImage(imageElement)
-      const topPrediction = predictions[0]
-      
-      // Get detailed species information
-      const speciesInfo = marineClassifier.getSpeciesInfo(topPrediction.species)
-      const biodiversityData = marineClassifier.analyzeBiodiversity()
-      const coordinates = marineClassifier.getHabitatCoordinates(speciesInfo.commonName)
-      
+        characteristics: 'Data not available'
+      };
+
       const result = {
         species: {
-          name: speciesInfo.commonName,
-          scientificName: speciesInfo.scientificName,
-          confidence: parseFloat(topPrediction.confidence),
+          name: topPrediction.name,
+          scientificName: topPrediction.species_id,
+          confidence: parseFloat(topPrediction.accuracy) || 0,
           habitat: speciesInfo.habitat,
           conservationStatus: speciesInfo.conservationStatus,
           distribution: speciesInfo.distribution,
-          characteristics: speciesInfo.characteristics,
-          morphology: speciesInfo.morphology
+          characteristics: speciesInfo.characteristics
         },
-        biodiversity: {
-          ecosystemHealth: biodiversityData.ecosystemHealth,
-          speciesDiversity: biodiversityData.speciesDiversity,
-          endemicSpecies: biodiversityData.endemicSpecies,
-          threatenedSpecies: biodiversityData.threatenedSpecies
-        },
-        geographical: {
-          coordinates: coordinates,
-          region: coordinates.region,
-          waterDepth: speciesInfo.depth,
-          temperature: speciesInfo.temperature,
-          salinity: biodiversityData.salinityRange
-        },
-        analysis: {
-          imageQuality: 95.2,
-          processingTime: '1.2s',
-          modelVersion: selectedModel,
-          timestamp: new Date().toISOString(),
-          allPredictions: predictions,
-          pipelineStages: {
-            detection: topPrediction.detectionConfidence || 0.9,
-            segmentation: topPrediction.segmentation?.confidence || 0.85,
-            classification: parseFloat(topPrediction.confidence) / 100
-          }
-        }
-      }
-      
-      // Clean up
-      URL.revokeObjectURL(imageElement.src)
-      
-      setAnalysisResult(result)
-    } catch (error) {
-      console.error('Analysis failed:', error)
-      // Fallback to mock data if AI model fails
-      const mockResult = {
-        species: indianOceanSpecies[Math.floor(Math.random() * indianOceanSpecies.length)],
         biodiversity: {
           ecosystemHealth: 87.3,
           speciesDiversity: 142,
@@ -206,17 +185,33 @@ const AIModels = () => {
           salinity: '34-35 PSU'
         },
         analysis: {
-          imageQuality: 94.2,
-          processingTime: '2.8s',
+          imageQuality: 95.2,
+          processingTime: '1.2s',
           modelVersion: selectedModel,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
+          allPredictions: predictions.map(pred => ({
+            name: pred.name,
+            scientificName: pred.species_id,
+            confidence: parseFloat(pred.accuracy) || 0,
+            accuracy: parseFloat(pred.accuracy) || 0,
+            detectionCount: pred.times
+          })),
+          pipelineStages: {
+            detection: 0.95,
+            segmentation: 0.93,
+            classification: (parseFloat(topPrediction.accuracy) || 0) / 100
+          }
         }
-      }
-      setAnalysisResult(mockResult)
+      };
+
+      setAnalysisResult(result);
+    } catch (error) {
+      console.error('Image analysis error:', error);
+      setAnalysisResult({ error: error.message || 'Failed to analyze image' });
+    } finally {
+      setIsAnalyzing(false);
     }
-    
-    setIsAnalyzing(false)
-  }, [selectedModel, indianOceanSpecies])
+  }, [selectedModel, indianOceanSpecies]);
 
   const handleImageUpload = useCallback((event) => {
     const file = event.target.files?.[0]
@@ -376,7 +371,20 @@ const AIModels = () => {
               exit={{ opacity: 0, y: -20 }}
               className="mb-12"
             >
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {analysisResult.error ? (
+                <div className="glass rounded-xl p-8 text-center">
+                  <AlertCircle className="w-16 h-16 mx-auto mb-4 text-red-400" />
+                  <h3 className="text-xl font-semibold text-foreground mb-2">Analysis Failed</h3>
+                  <p className="text-muted-foreground mb-4">{analysisResult.error}</p>
+                  <button
+                    onClick={() => setAnalysisResult(null)}
+                    className="btn-secondary"
+                  >
+                    Try Again
+                  </button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Species Identification */}
                 <div className="glass rounded-xl p-6">
                   <div className="flex items-center space-x-3 mb-6">
@@ -385,35 +393,85 @@ const AIModels = () => {
                   </div>
                   
                   <div className="space-y-4">
-                    <div className="p-4 bg-card/30 rounded-lg border border-border">
-                      <div className="flex items-center justify-between mb-2">
-                        <h4 className="font-semibold text-foreground">{analysisResult.species.name}</h4>
-                        <span className="text-sm font-medium text-green-400">
-                          {analysisResult.species.confidence}% confidence
-                        </span>
+                    <div className="p-6 bg-card/30 rounded-lg border border-border">
+                      <div className="flex items-center justify-between mb-4">
+                        <div>
+                          <h4 className="text-xl font-bold text-foreground mb-1">{analysisResult.species.name}</h4>
+                          <p className="text-sm font-medium text-primary italic">
+                            {analysisResult.species.scientificName}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-2xl font-bold text-green-400 mb-1">
+                            {Math.round(analysisResult.species.confidence * 100)}%
+                          </div>
+                          <p className="text-xs text-muted-foreground">Confidence Score</p>
+                        </div>
                       </div>
-                      <p className="text-sm text-muted-foreground italic mb-2">
-                        {analysisResult.species.scientificName}
+                      <div className="p-4 bg-primary/5 rounded-lg border border-primary/10 mb-4">
+                        <p className="text-sm text-foreground leading-relaxed">
+                          {analysisResult.species.characteristics}
+                        </p>
+                      </div>
+
+                        <div>
+              <h3 className="text-lg font-semibold text-foreground mt-6 mb-3">
+                All Possible Species
+              </h3>
+              <div className="space-y-2">
+                {analysisResult?.analysis?.allPredictions?.slice(0, 10).map((prediction, index) => (
+                  <div
+                    key={index}
+                    className="flex justify-between items-center p-3 bg-card/30 border border-border rounded-lg hover:bg-card/40 transition-colors"
+                  >
+                    <div className="flex-1">
+                      <p className="font-medium text-foreground">
+                        {prediction.name}
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        {analysisResult.species.characteristics}
+                        {prediction.scientificName}
                       </p>
                     </div>
+                    <div className="text-right">
+                      <p className="font-semibold text-green-400">
+                        {Math.round(prediction.accuracy * 100)}%
+                      </p>
+                      {prediction.detectionCount > 0 && (
+                        <p className="text-xs text-muted-foreground">
+                          Detected {prediction.detectionCount} times
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+                    </div>
 
-                    <div className="grid grid-cols-1 gap-3">
-                      <div className="flex justify-between items-center p-3 bg-card/20 rounded-lg">
-                        <span className="text-muted-foreground">Habitat:</span>
-                        <span className="text-foreground font-medium">{analysisResult.species.habitat}</span>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="p-4 bg-card/20 rounded-lg border border-border hover:bg-card/30 transition-colors">
+                        <div className="flex items-center space-x-2 mb-2">
+                          <Waves className="w-4 h-4 text-primary" />
+                          <span className="text-sm font-medium text-foreground">Habitat</span>
+                        </div>
+                        <p className="text-sm text-muted-foreground leading-relaxed">
+                          {analysisResult.species.habitat}
+                        </p>
                       </div>
-                      <div className="flex justify-between items-center p-3 bg-card/20 rounded-lg">
-                        <span className="text-muted-foreground">Conservation:</span>
-                        <span className={`font-medium ${
-                          analysisResult.species.conservationStatus === 'Least Concern' 
-                            ? 'text-green-400' 
-                            : 'text-yellow-400'
-                        }`}>
-                          {analysisResult.species.conservationStatus}
-                        </span>
+                      <div className="p-4 bg-card/20 rounded-lg border border-border hover:bg-card/30 transition-colors">
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center space-x-2">
+                            <AlertCircle className="w-4 h-4 text-primary" />
+                            <span className="text-sm font-medium text-foreground">Conservation Status</span>
+                          </div>
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            analysisResult.species.conservationStatus === 'Least Concern'
+                              ? 'bg-green-400/10 text-green-400 border border-green-400/20'
+                              : 'bg-yellow-400/10 text-yellow-400 border border-yellow-400/20'
+                          }`}>
+                            {analysisResult.species.conservationStatus}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -544,12 +602,13 @@ const AIModels = () => {
                     )}
                   </div>
                 </div>
-              </div>
 
-              {/* Indian Ocean Distribution Map */}
-              <div className="col-span-1 lg:col-span-2">
-                <IndianOceanMap analysisResult={analysisResult} />
+                {/* Indian Ocean Distribution Map */}
+                {/* <div className="col-span-1 lg:col-span-2">
+                  <IndianOceanMap analysisResult={analysisResult} />
+                </div> */}
               </div>
+              )}
             </motion.div>
           )}
         </AnimatePresence>

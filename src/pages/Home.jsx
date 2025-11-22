@@ -125,7 +125,7 @@ const HeroSection = () => {
             </Link>
 
             <Link
-              to="/data-upload"
+              to="/ai-models"
               className={`group px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 border-2 flex items-center ${
                 theme === 'dark' 
                   ? 'border-white/20 text-white hover:bg-white/10' 

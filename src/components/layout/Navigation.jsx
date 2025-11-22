@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { 
-  Menu, 
-  X, 
-  Home, 
-  BarChart3, 
-  Database, 
-  Upload, 
+import {
+  Menu,
+  X,
+  Home,
+  BarChart3,
+  Database,
+  Upload,
   Microscope,
   Brain,
   Info,
@@ -43,12 +43,15 @@ const Navigation = () => {
   const navItems = [
     { name: 'Home', path: '/', icon: Home },
     { name: 'Dashboard', path: '/dashboard', icon: BarChart3 },
-    { name: 'Research', path: '/research', icon: Database },
+    // { name: 'Research', path: '/research', icon: Database },
     // { name: 'Upload', path: '/upload', icon: Upload },
     { name: 'Otoliths', path: '/otoliths', icon: Microscope },
     { name: 'AI Models', path: '/ai-models', icon: Brain },
     { name: 'About', path: '/about', icon: Info },
     { name: 'Contact', path: '/contact', icon: Mail },
+   // { name: 'signup', path: '/signup', icon: Waves },
+   // { name: 'login', path: '/login', icon: Waves },
+    { name: 'profile', path: '/profile', icon: Waves },
   ]
 
   // Handle scroll effect
@@ -56,7 +59,7 @@ const Navigation = () => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50)
     }
-    
+
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
@@ -76,8 +79,8 @@ const Navigation = () => {
         animate={{ y: 0 }}
         className={clsx(
           'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
-          scrolled 
-            ? 'bg-ocean-950/95 backdrop-blur-md border-b border-white/10 shadow-lg' 
+          scrolled
+            ? 'bg-ocean-950/95 backdrop-blur-md border-b border-white/10 shadow-lg'
             : 'bg-transparent'
         )}
       >
@@ -162,7 +165,7 @@ const Navigation = () => {
                     </Link>
                   )
                 })}
-                
+
                 {/* Mobile Theme Toggle */}
                 <div className="px-4 py-3 border-t border-white/10 mt-2 pt-4 sm:hidden">
                   <ThemeToggle />
